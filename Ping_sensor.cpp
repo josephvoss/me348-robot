@@ -31,6 +31,17 @@ Ping_sensor::Ping_sensor(int pin_s, int pin_p, int read_count)
    distance_arr = (int*) malloc(read_count*sizeof(int));
 }
 
+void Ping_sensor::run(void)
+{
+  //Code to be run by cog. Basically call read at regular intervals
+  
+  //Bad way to do it, but could we time the read loop, then have it wait
+  //like 5 sec, then read again? Shitty way to sync with other cogs, but 
+  //idk a better way
+  this->run();
+  pause(5000);
+}  
+
 void Ping_sensor::read(void)
 {
     servo_angle(pin_servo, 0);

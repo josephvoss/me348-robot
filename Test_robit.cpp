@@ -71,7 +71,7 @@ void init_all()
 
 void exit_all()
 {
-//  delete turrent;
+//  delete turret;
   printf("Exited Successfully\n");
 }  
 
