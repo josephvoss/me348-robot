@@ -1,0 +1,22 @@
+Test_robit.cpp
+Ping_sensor.cpp
+-I ./Learn/Simple Libraries/Sensor/libping
+-L ./Learn/Simple Libraries/Sensor/libping
+-I ./Learn/Simple Libraries/Motor/libservo
+-L ./Learn/Simple Libraries/Motor/libservo
+Ping_sensor.h
+-I ./../Learn/Simple Libraries/Sensor/libping
+-L ./../Learn/Simple Libraries/Sensor/libping
+-I ./../Learn/Simple Libraries/Robotics/ActivityBot/libabdrive
+-L ./../Learn/Simple Libraries/Robotics/ActivityBot/libabdrive
+-I ./../Learn/Simple Libraries/Motor/libservo
+-L ./../Learn/Simple Libraries/Motor/libservo
+>compiler=C++
+>memtype=cmm main ram compact
+>optimize=-Os
+>-m32bit-doubles
+>-fno-exceptions
+>-fno-rtti
+>-ltiny
+>linker::-lping -lservo -labdrive
+>BOARD::ACTIVITYBOARD
