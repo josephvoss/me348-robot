@@ -21,7 +21,8 @@ Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int log_length)
     //Set initial position
     curr_pos_x = 0;
     curr_pos_y = 0;
-    
+
+    orientation = 0;    
 }
 
 Drive_wrapper::~Drive_wrapper()
@@ -40,13 +41,26 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
     {
     //Ask for sensor data every 10 cm?
          float distance = l_tick*3.25;
-         int multiple_100mm = floor(distance/100);
-         int remainder = distance-multiple
+         int multiple_ticks = floor(distance/100);
+         int remainder = distance-multiple_ticks;
          for(int i=0; i<multiple_100; i++)
          {
-             drive(100/3.25, 100/3.25);
-             cur_pos_x  += 10;
-             cur_pos_y  += 10;
+             drive(multiple_ticks, multiple_ticks);
+             
+             //Logic to determine direction
+             //   0
+             // 3   1
+             //   2
+             
+             //ugly code block but at least it's reasonable
+             int x = 0; int y = 0;
+             if (orientation == 0) y = 1;
+             if (orientation == 1) x = 1;
+             if (orientation == 2) y = -1;
+             if (orientation == 3) x = -1;
+             cur_pos_y  += 10*y
+             cur_pos_x  += 10*x
+             
              //Log?
              //Set Sensor flag?
          }

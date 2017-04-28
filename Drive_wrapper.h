@@ -29,6 +29,10 @@ class Drive_wrapper
     int pin_right;
     int cur_pos_x;
     int cur_pos_y;
+    int orientation;
+    //    0
+    //  3   1
+    //    2
     int pos_arr_length;
     int** position_array;
     
