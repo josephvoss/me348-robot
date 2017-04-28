@@ -39,9 +39,9 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
     //if straight
     if (l_tick == r_tick)
     {
-    //Ask for sensor data every 10 cm?
-         float distance = l_tick*3.25;
-         int multiple_ticks = floor(distance/100);
+    //Ask for sensor data every 30 ticks?
+         int distance = l_tick;
+         int multiple_ticks = floor(distance/30);
          int remainder = distance-multiple_ticks;
          for(int i=0; i<multiple_100; i++)
          {
@@ -64,7 +64,7 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
              //Log?
              //Set Sensor flag?
          }
-         drive(remainder/3.25, remainder/3.25);
+         drive(remainder, remainder);
     
     }    
 }  
