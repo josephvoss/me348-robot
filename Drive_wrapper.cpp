@@ -2,11 +2,8 @@
 
 #include "abdrive.h"
 
-Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int log_length)
+Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re, int log_length)
 {
-    //Init Pins
-    pin_left = pin_l;
-    pin_right = pin_r;
     
     //Init array length
     pos_arr_length = log_length;
@@ -15,17 +12,19 @@ Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int log_length)
     position_array = (int**) malloc(log_length*sizeof(int*));
     for (int i=0; i<log_length; i++)
     {
-        positon_array[i] = (int*) malloc(2*sizeof(int));
+        position_array[i] = (int*) malloc(2*sizeof(int));
     }      
 
     //Set initial position
-    curr_pos_x = 0;
-    curr_pos_y = 0;
+    cur_pos_x = 0;
+    cur_pos_y = 0;
 
     orientation = 0;
     
     //Init drive system
-    
+    drive_servoPins(pin_l,pin_r);
+    drive_encoderPins(pin_le, pin_re);
+       
 }
 
 Drive_wrapper::~Drive_wrapper()
@@ -47,7 +46,7 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
          int multiple_ticks = floor(distance/30);
          int remainder = distance-multiple_ticks;
          int x = 0; int y = 0; int l_count; int r_count;
-         for(int i=0; i<multiple_100; i++)
+         for(int i=0; i<multiple_ticks; i++)
          {
              drive_goto(multiple_ticks, multiple_ticks); // blocking
              pause(100);
@@ -65,8 +64,8 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
              if (orientation == 1) x = 1;
              if (orientation == 2) y = -1;
              if (orientation == 3) x = -1;
-             cur_pos_y  += l_count*y
-             cur_pos_x  += r_count*x
+             cur_pos_y  += l_count*y;
+             cur_pos_x  += r_count*x;
              
              //Log?
              //Set Sensor flag?
