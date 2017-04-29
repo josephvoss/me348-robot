@@ -22,7 +22,10 @@ Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int log_length)
     curr_pos_x = 0;
     curr_pos_y = 0;
 
-    orientation = 0;    
+    orientation = 0;
+    
+    //Init drive system
+    
 }
 
 Drive_wrapper::~Drive_wrapper()
@@ -43,9 +46,13 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
          int distance = l_tick;
          int multiple_ticks = floor(distance/30);
          int remainder = distance-multiple_ticks;
+         int x = 0; int y = 0; int l_count; int r_count;
          for(int i=0; i<multiple_100; i++)
          {
-             drive(multiple_ticks, multiple_ticks);
+             drive_goto(multiple_ticks, multiple_ticks); // blocking
+             pause(100);
+             
+             drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
              
              //Logic to determine direction
              //   0
@@ -53,13 +60,13 @@ void Drive_wrapper::drive(int l_tick, int r_tick)
              //   2
              
              //ugly code block but at least it's reasonable
-             int x = 0; int y = 0;
+             x = 0; y = 0;
              if (orientation == 0) y = 1;
              if (orientation == 1) x = 1;
              if (orientation == 2) y = -1;
              if (orientation == 3) x = -1;
-             cur_pos_y  += 10*y
-             cur_pos_x  += 10*x
+             cur_pos_y  += l_count*y
+             cur_pos_x  += r_count*x
              
              //Log?
              //Set Sensor flag?
