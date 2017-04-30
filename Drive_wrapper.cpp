@@ -46,7 +46,6 @@ void Drive_wrapper::drive(int ticks)
     for(int i=0; i<multiple_ticks; i++)
     {
         drive_goto(multiple_ticks, multiple_ticks); // blocking
-        
         drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
         
         //Logic to determine direction
@@ -66,7 +65,7 @@ void Drive_wrapper::drive(int ticks)
         //Log?
         //Set Sensor flag?
     }
-    drive(remainder);
+    drive_goto(remainder,remainder);
 }
 
 void Drive_wrapper::turn(int turnLeft, int turnRight)
