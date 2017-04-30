@@ -21,7 +21,7 @@ class Drive_wrapper
   public:
     Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re, int log_length);
     ~Drive_wrapper();
-    void drive(int ticks);
+    void drive(int speed, int* flag);
     void turn(int left_turn, int right_turn);
     void run(); //Drive cog function. Combine this cog with decision cog?
   

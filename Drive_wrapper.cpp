@@ -36,36 +36,36 @@ Drive_wrapper::~Drive_wrapper()
     free(position_array);
 }
 
-void Drive_wrapper::drive(int ticks)
+void Drive_wrapper::drive(int speed, int* flag_drive)
 {
     //Ask for sensor data every 15 ticks?
-    int distance = ticks;
-    int multiple_ticks = floor(distance/15);
-    int remainder = distance-multiple_ticks;
     int x = 0; int y = 0; int l_count; int r_count;
-    for(int i=0; i<multiple_ticks; i++)
-    {
-        drive_goto(multiple_ticks, multiple_ticks); // blocking
-        drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
-        
-        //Logic to determine direction
-        //   0
-        // 3   1
-        //   2
-        
-        //ugly code block but at least it's reasonable
-        x = 0; y = 0;
-        if (orientation == 0) y = 1;
-        if (orientation == 1) x = 1;
-        if (orientation == 2) y = -1;
-        if (orientation == 3) x = -1;
-        cur_pos_y += l_count*y;
-        cur_pos_x += r_count*x;
-        
-        //Log?
-        //Set Sensor flag?
+    while(1)
+    {    
+        while (*drive_flag)
+        {
+            drive_speed(speed, speed); // blocking
+            
+            //Log?
+            //Set Sensor flag?
+        }
     }
-    drive_goto(remainder,remainder);
+    drive_speed(0,0);
+    drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
+    
+    //Logic to determine direction
+    //   0
+    // 3   1
+    //   2
+    
+    //ugly code block but at least it's reasonable
+    x = 0; y = 0;
+    if (orientation == 0) y = 1;
+    if (orientation == 1) x = 1;
+    if (orientation == 2) y = -1;
+    if (orientation == 3) x = -1;
+    cur_pos_y += l_count*y;
+    cur_pos_x += r_count*x;
 }
 
 void Drive_wrapper::turn(int turnLeft, int turnRight)
