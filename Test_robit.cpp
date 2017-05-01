@@ -1,8 +1,6 @@
 #include <stdio.h>            // Recommended over iostream for saving space
 #include <propeller.h>        // Propeller-specific functions
 
-#include "Ping_sensor.h"
-#include "Drive_wrapper.h"
 #include "Control.h"
 
 void init_all()
@@ -24,7 +22,7 @@ int main(){
     init_all();
     //IR and QTI not implemented, pins set to 0
     Ping_sensor turret(16, 19, 0,0,0,0);
-    Drive_wrapper driver(0,0,0,0);
+    Drive_wrapper driver(12,13,14,15);
     Control controller(&turret, &driver);
     controller.main();
   

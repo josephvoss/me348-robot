@@ -7,7 +7,7 @@ Control::Control(Ping_sensor* ping_in, Drive_wrapper* drive_in)
 {
     //Init pointers to the add of input classes
     ping = ping_in;
-    drive = drive_in;
+    driver = drive_in;
 
     drive_flag = (int*) malloc(sizeof(int));
     sense_flag = (int*) malloc(sizeof(int));
@@ -50,7 +50,7 @@ void Control::decide(int left, int right, int straight)
     //Decide on direction
     if (options > 1)
     {
-        dir = rand() % options;
+        int dir = rand() % options;
         if (current.l_flag && current.r_flag && current.s_flag)
         {
             if (dir == 1) { driver->turn_left(); }
@@ -100,7 +100,7 @@ void Control::decide(int left, int right, int straight)
 void Control::main(void)
 {
     //Pointer to data address being updated by sensor class
-    Sensor_Data* sensor_data = &(ping_in->data;
+    Sensor_Data* sensor_data = &(ping_in->data);
 
     //Pass sense_flag address to sense function
     *sense_flag = 1;
@@ -131,12 +131,9 @@ void Control::main(void)
         }
 
         //Example for now, sensor_data array format unspecified
-        left = dist_l;
-        right = dist_r;
-        straight = dist_s;
-        decide(left, right, straight); // Turn either left, right, or neither
-        drive_flag = 1;
+        decide(dist_l, dist_r, dist_s); // Turn either left, right, or neither
+        *drive_flag = 1;
         pause(1000);
-        sense_flag = 1;
+        *sense_flag = 1;
     }
 }

@@ -11,6 +11,11 @@ Ping_sensor.h
 -L ./../Learn/Simple Libraries/Robotics/ActivityBot/libabdrive
 -I ./../Learn/Simple Libraries/Motor/libservo
 -L ./../Learn/Simple Libraries/Motor/libservo
+Control.cpp
+Control.h
+Drive_wrapper.cpp
+Drive_wrapper.h
+Drive_wrapper.cpp
 >compiler=C++
 >memtype=cmm main ram compact
 >optimize=-Os
