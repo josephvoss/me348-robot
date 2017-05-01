@@ -15,7 +15,6 @@ Control.cpp
 Control.h
 Drive_wrapper.cpp
 Drive_wrapper.h
-Drive_wrapper.cpp
 >compiler=C++
 >memtype=cmm main ram compact
 >optimize=-Os

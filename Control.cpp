@@ -14,6 +14,9 @@ Control::Control(Ping_sensor* ping_in, Drive_wrapper* drive_in)
     sense_flag = (int*) malloc(sizeof(int));
     decide_arr = (Decide_tuple*) malloc(sizeof(Decide_tuple)*10);
     decide_count = 0;
+    
+    ping->set_flag(sense_flag);
+    driver->set_flag(drive_flag);
 }
 
 Control::~Control(void)
@@ -105,11 +108,9 @@ void Control::main(void)
 
     //Pass sense_flag address to sense function
     *sense_flag = 1;
-    cog_run(ping->run);
 
     //Pass drive_flag address to drive function
     *drive_flag = 1;
-    cog_run(driver->run);
 
     int dist_r; int dist_l; int dist_s;
     while (1)
@@ -121,7 +122,6 @@ void Control::main(void)
         //      Space to the left
         //      Space to the right
         
-
         dist_l = sensor_data->ping[0];
         dist_s = sensor_data->ping[1];
         dist_r = sensor_data->ping[2];

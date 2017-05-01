@@ -40,7 +40,7 @@ Drive_wrapper::~Drive_wrapper()
     orientation = 0;
 }
 
-void Drive_wrapper:run(void)
+void Drive_wrapper::run(void)
 {
     while(1)
     {
