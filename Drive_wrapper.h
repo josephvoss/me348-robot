@@ -17,12 +17,13 @@ class Drive_wrapper
   public:
     Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re);
     ~Drive_wrapper();
-    void drive(int speed, int* flag);
+    void drive(int speed);
     void run(); //Drive cog function. Combine this cog with decision cog?
     void turn_left(void) { turn(1,0); }
     void turn_right(void) { turn(0,1); }
     int get_pos_x(void)  { return cur_pos_x; }
     int get_pos_y(void)  { return cur_pos_y; }
+    void set_flag(int* drive_flag) { flag = drive_flag; }
   
   private:
     void turn(int left_turn, int right_turn);
@@ -34,5 +35,6 @@ class Drive_wrapper
     //    2
     int pos_arr_length;
     int** position_array;
+    int* flag;
     
 };

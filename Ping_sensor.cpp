@@ -15,29 +15,29 @@ Ping_sensor::~Ping_sensor(void)
 
 Ping_sensor::Ping_sensor(int pin_s, int pin_p, int pin_lir, int pin_rir, int pin_lqt, int pin_rqt)
 {
-   // Init all sensors
-   pin_servo = pin_s;
-   pin_ping = pin_p;
-   pin_left_ir = pin_lir;
-   pin_right_ir = pin_rir;
-   pin_left_qt = pin_lqt;
-   pin_right_qt = pin_rqt;
-   
-//   count = read_count;
-   //Init angle_arr with values to read
-   angle_arr = (int*) malloc(3*sizeof(int));
-   int i=0;
-   int angle_diff = 180/(3-1);
-   for (i=0; i<3; i++)
-   {
-    angle_arr[i] = i*angle_diff*10;
-   }
+    // Init all sensors
+    pin_servo = pin_s;
+    pin_ping = pin_p;
+    pin_left_ir = pin_lir;
+    pin_right_ir = pin_rir;
+    pin_left_qt = pin_lqt;
+    pin_right_qt = pin_rqt;
+    
+//    count = read_count;
+    //Init angle_arr with values to read
+    angle_arr = (int*) malloc(3*sizeof(int));
+    int i=0;
+    int angle_diff = 180/(3-1);
+    for (i=0; i<3; i++)
+    {
+     angle_arr[i] = i*angle_diff*10;
+    }
    
    //Init distance_array
 //   distance_arr = (Sensor_data*) malloc(read_count*sizeof(Sensor_data));
 }
 
-void Ping_sensor::run(int* flag)
+void Ping_sensor::run(void)
 {
   //Code to be run by cog. Basically call read every second
   while (1)
