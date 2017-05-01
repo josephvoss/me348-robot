@@ -10,10 +10,10 @@ Ping_sensor::~Ping_sensor(void)
 {
   printf("Deleting Ping_sensor\n");
   free(angle_arr);
-  free(distance_arr); 
+//  free(distance_arr); //Not using data array, just singular reads 
 }
 
-Ping_sensor::Ping_sensor(int pin_s, int pin_p, int pin_lir, int pin_rir, int pin_lqt, int pin_rqt, int read_count)
+Ping_sensor::Ping_sensor(int pin_s, int pin_p, int pin_lir, int pin_rir, int pin_lqt, int pin_rqt)
 {
    // Init all sensors
    pin_servo = pin_s;
@@ -23,26 +23,31 @@ Ping_sensor::Ping_sensor(int pin_s, int pin_p, int pin_lir, int pin_rir, int pin
    pin_left_qt = pin_lqt;
    pin_right_qt = pin_rqt;
    
-   count = read_count;
+//   count = read_count;
    //Init angle_arr with values to read
    angle_arr = (int*) malloc(3*sizeof(int));
    int i=0;
-   int angle_diff = 180/(read_count-1);
+   int angle_diff = 180/(3-1);
    for (i=0; i<3; i++)
    {
     angle_arr[i] = i*angle_diff*10;
    }
    
    //Init distance_array
-   distance_arr = (Sensor_data*) malloc(read_count*sizeof(Sensor_data));
+//   distance_arr = (Sensor_data*) malloc(read_count*sizeof(Sensor_data));
 }
 
-void Ping_sensor::run(void)
+void Ping_sensor::run(int* flag)
 {
   //Code to be run by cog. Basically call read every second
-  
-  this->read();
-  pause(200);
+  while (1)
+  {
+      while(*flag)
+      {
+          this->read();
+          pause(200);
+      }
+  }
 }  
 
 void Ping_sensor::read(void)
@@ -61,6 +66,7 @@ void Ping_sensor::read(void)
     // Add QTI and IR reads here
 
     // Adds current read to data array
-    Sensor_data[count] = new_read;
-    count++;
+      data = new_read;
+//    distance_arr[count] = new_read;
+//    count++;
 } 
