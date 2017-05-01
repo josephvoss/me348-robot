@@ -1,5 +1,8 @@
 #include "Control.h"
 
+#include <propeller.h>
+#include <stdio.h>
+
 Control::Control(Ping_sensor* ping_in, Drive_wrapper* drive_in)
 {
     //Init pointers to the add of input classes
