@@ -1,4 +1,5 @@
 #include "Control.h"
+#include "Ping_sensor.h"
 
 #include <propeller.h>
 #include <stdio.h>
@@ -100,15 +101,15 @@ void Control::decide(int left, int right, int straight)
 void Control::main(void)
 {
     //Pointer to data address being updated by sensor class
-    Sensor_Data* sensor_data = &(ping_in->data);
+    Sensor_data* sensor_data = &(ping->data);
 
     //Pass sense_flag address to sense function
     *sense_flag = 1;
-    cog_run(ping_in->run(sense_flag));
+    cog_run(ping->run);
 
     //Pass drive_flag address to drive function
     *drive_flag = 1;
-    cog_run(driver->drive(25, drive_flag));
+    cog_run(driver->run);
 
     int dist_r; int dist_l; int dist_s;
     while (1)
@@ -121,9 +122,9 @@ void Control::main(void)
         //      Space to the right
         
 
-        dist_l = sensor_data.ping[0];
-        dist_s = sensor_data.ping[1];
-        dist_r = sensor_data.ping[2];
+        dist_l = sensor_data->ping[0];
+        dist_s = sensor_data->ping[1];
+        dist_r = sensor_data->ping[2];
         if (dist_s < 15 || dist_r < 10 || dist_l < 10)
         {
             drive_flag = 0;

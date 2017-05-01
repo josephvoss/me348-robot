@@ -1,7 +1,10 @@
+#ifndef PING_SENSOR_H
+#define PING_SENSOR_H
+
 #include "ping.h"
 #include "servo.h"
 
-typedef struct 
+typedef struct Sensor_data
 {
     int ping[3];
     int left_ir;
@@ -35,3 +38,5 @@ class Ping_sensor
     int* angle_arr;
     int* flag;
 };
+
+#endif

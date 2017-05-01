@@ -1,3 +1,6 @@
+#ifndef DRIVE_WRAPPER_H
+#define DRIVE_WRAPPER_H
+
 class Drive_wrapper
 /*
   Drive wrappper class
@@ -38,3 +41,5 @@ class Drive_wrapper
     int* flag;
     
 };
+
+#endif
