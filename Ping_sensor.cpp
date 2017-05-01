@@ -25,39 +25,42 @@ Ping_sensor::Ping_sensor(int pin_s, int pin_p, int pin_lir, int pin_rir, int pin
    
    count = read_count;
    //Init angle_arr with values to read
-   angle_arr = (int*) malloc(read_count*sizeof(int));
+   angle_arr = (int*) malloc(3*sizeof(int));
    int i=0;
    int angle_diff = 180/(read_count-1);
-   for (i=0; i<read_count; i++)
+   for (i=0; i<3; i++)
    {
     angle_arr[i] = i*angle_diff*10;
    }
    
    //Init distance_array
-   distance_arr = (int*) malloc(read_count*sizeof(int));
+   distance_arr = (Sensor_data*) malloc(read_count*sizeof(Sensor_data));
 }
 
 void Ping_sensor::run(void)
 {
-  //Code to be run by cog. Basically call read at regular intervals
+  //Code to be run by cog. Basically call read every second
   
-  //Bad way to do it, but could we time the read loop, then have it wait
-  //like 5 sec, then read again? Shitty way to sync with other cogs, but 
-  //idk a better way
-  
-  this->run();
-  pause(4600);
+  this->read();
+  pause(200);
 }  
 
 void Ping_sensor::read(void)
 {
+    Sensor_data new_read;
     servo_angle(pin_servo, 0);
-    pause(200);
-    for (int i=0; i<count; i++)
+    pause(100);
+    for (int i=0; i<3; i++)
     {
       servo_angle(pin_servo, angle_arr[i]);
-      pause(200);
-      distance_arr[i] = ping_cm(pin_ping);
-      pause(200); //wait 1th of a second
-    }    
+      pause(100);
+      new_read.ping[i] = ping_cm(pin_ping);
+      pause(100); //wait 1th of a second
+    }
+    
+    // Add QTI and IR reads here
+
+    // Adds current read to data array
+    Sensor_data[count] = new_read;
+    count++;
 } 

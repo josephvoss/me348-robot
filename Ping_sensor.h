@@ -1,6 +1,14 @@
 #include "ping.h"
 #include "servo.h"
 
+typedef struct {
+    int ping[3];
+    int left_ir;
+    int right_ir;
+    int left_qti;
+    int right_qti;
+} Sensor_data;
+
 class Ping_sensor
 {
   public:
@@ -8,8 +16,10 @@ class Ping_sensor
     ~Ping_sensor();
     void read();
     void run();//Function to be run on cog with class in shared memory (right?)
-    int* distance_arr; //made public for shared memory testing. Should be
-                       //private w/ mutator functions
+
+    //made public for shared memory testing. Should be
+    //private w/ mutator functions
+    Sensor_data* distance_arr; 
   
   private:
     int pin_servo;
