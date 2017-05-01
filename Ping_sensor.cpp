@@ -13,10 +13,16 @@ Ping_sensor::~Ping_sensor(void)
   free(distance_arr); 
 }
 
-Ping_sensor::Ping_sensor(int pin_s, int pin_p, int read_count)
+Ping_sensor::Ping_sensor(int pin_s, int pin_p, int pin_lir, int pin_rir, int pin_lqt, int pin_rqt, int read_count)
 {
+   // Init all sensors
    pin_servo = pin_s;
    pin_ping = pin_p;
+   pin_left_ir = pin_lir;
+   pin_right_ir = pin_rir;
+   pin_left_qt = pin_lqt;
+   pin_right_qt = pin_rqt;
+   
    count = read_count;
    //Init angle_arr with values to read
    angle_arr = (int*) malloc(read_count*sizeof(int));
@@ -25,8 +31,8 @@ Ping_sensor::Ping_sensor(int pin_s, int pin_p, int read_count)
    for (i=0; i<read_count; i++)
    {
     angle_arr[i] = i*angle_diff*10;
-    printf("angle: %d\n", angle_arr[i]);
    }
+   
    //Init distance_array
    distance_arr = (int*) malloc(read_count*sizeof(int));
 }
@@ -38,8 +44,9 @@ void Ping_sensor::run(void)
   //Bad way to do it, but could we time the read loop, then have it wait
   //like 5 sec, then read again? Shitty way to sync with other cogs, but 
   //idk a better way
+  
   this->run();
-  pause(5000);
+  pause(4600);
 }  
 
 void Ping_sensor::read(void)
