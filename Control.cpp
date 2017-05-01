@@ -6,8 +6,9 @@ Control::Control(Ping_sensor* ping_in, Drive_wrapper* drive_in)
     ping = ping_in;
     drive = drive_in;
 
-    drive_flag = malloc(sizeof(int));
-    decide_arr = malloc(sizeof(Decide_tuple)*10);
+    drive_flag = (int*) malloc(sizeof(int));
+    sense_flag = (int*) malloc(sizeof(int));
+    decide_arr = (Decide_tuple*) malloc(sizeof(Decide_tuple)*10);
     decide_count = 0;
 }
 
@@ -96,34 +97,43 @@ void Control::decide(int left, int right, int straight)
 void Control::main(void)
 {
     //Pointer to data address being updated by sensor class
-    int** sensor_data = &(ping_in->distance_arr);
+    Sensor_Data* sensor_data = &(ping_in->data;
 
-    cog_run(ping_in->read());
+    //Pass sense_flag address to sense function
+    *sense_flag = 1;
+    cog_run(ping_in->run(sense_flag));
 
     //Pass drive_flag address to drive function
     *drive_flag = 1;
     cog_run(driver->drive(25, drive_flag));
 
+    int dist_r; int dist_l; int dist_s;
     while (1)
     {
-        //Loop over sensor data
-        for (int i = 0; i < 5; i++)
+
+        // Case in which to stop moving
+        //      Wall in front
+        //      Line in front
+        //      Space to the left
+        //      Space to the right
+        
+
+        dist_l = sensor_data.ping[0];
+        dist_s = sensor_data.ping[1];
+        dist_r = sensor_data.ping[2];
+        if (dist_s < 15 || dist_r < 10 || dist_l < 10)
         {
-            // Case in which to stop moving
-            //      Wall in front
-            //      Line in front
-            //      Space to the left
-            //      Space to the right
-            if ((*sensor_data)[i] < 15)
-            {
-                drive_flag = 0;
-            }
+            drive_flag = 0;
+            sense_flag = 0;
         }
+
         //Example for now, sensor_data array format unspecified
-        left = (*sensor_data)[0];
-        right = (*sensor_data)[2];
-        straight = (*sensor_data)[1];
+        left = dist_l;
+        right = dist_r;
+        straight = dist_s;
         decide(left, right, straight); // Turn either left, right, or neither
-        drive_flag = 1
+        drive_flag = 1;
+        pause(1000);
+        sense_flag = 1;
     }
-};
+}

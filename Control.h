@@ -25,6 +25,8 @@ class Control
         Drive_wrapper* driver;
         //Pointer to pass to drive class
         int* drive_flag;
+        //Pointer to pass to sense class
+        int* sense_flag;
 
         //Decision_arr tracker
         int decide_count;
