@@ -2,9 +2,9 @@
 
 #include "abdrive.h"
 
-Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re, int log_length)
+Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re)
 {
-    
+/*    
     //Init array length
     pos_arr_length = log_length;
     
@@ -14,6 +14,7 @@ Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re, int l
     {
         position_array[i] = (int*) malloc(2*sizeof(int));
     }      
+*/
 
     //Set initial position
     cur_pos_x = 0;
@@ -28,12 +29,15 @@ Drive_wrapper::Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re, int l
 }
 
 Drive_wrapper::~Drive_wrapper()
-{    
+{
+   /* 
     for (int i=0; i<pos_arr_length; i++)
     {
         free(position_array[i]);
     }
     free(position_array);
+    */
+    orientation = 0;
 }
 
 void Drive_wrapper::drive(int speed, int* flag_drive)
@@ -49,26 +53,26 @@ void Drive_wrapper::drive(int speed, int* flag_drive)
             //Log?
             //Set Sensor flag?
         }
+        drive_speed(0,0);
+        drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
+        
+        //Logic to determine direction
+        //   0
+        // 3   1
+        //   2
+
+        //Only updates current position after stopped - no way to do real time
+        //sensing
+
+        //ugly code block but at least it's reasonable
+        x = 0; y = 0;
+        if (orientation == 0) y = 1;
+        if (orientation == 1) x = 1;
+        if (orientation == 2) y = -1;
+        if (orientation == 3) x = -1;
+        cur_pos_y += l_count*y;
+        cur_pos_x += r_count*x;
     }
-    drive_speed(0,0);
-    drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
-    
-    //Logic to determine direction
-    //   0
-    // 3   1
-    //   2
-
-    //Only updates current position after stopped - no way to do real time
-    //sensing
-
-    //ugly code block but at least it's reasonable
-    x = 0; y = 0;
-    if (orientation == 0) y = 1;
-    if (orientation == 1) x = 1;
-    if (orientation == 2) y = -1;
-    if (orientation == 3) x = -1;
-    cur_pos_y += l_count*y;
-    cur_pos_x += r_count*x;
 }
 
 void Drive_wrapper::turn(int turnLeft, int turnRight)
