@@ -19,8 +19,8 @@ class Drive_wrapper
     ~Drive_wrapper();
     void drive(int speed, int* flag);
     void run(); //Drive cog function. Combine this cog with decision cog?
-    void turn_left(void) { turn(1,0); }
-    void turn_right(void) { turn(0,1); }
+    void turn_left(void) { turn(1,0); };
+    void turn_right(void) { turn(0,1); };
   
   private:
     void turn(int left_turn, int right_turn);
