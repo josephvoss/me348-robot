@@ -12,20 +12,18 @@ class Drive_wrapper
                   If this array is to be accessed by other functions, data 
                   relativity could be an issue.
 
-   TO DO:
-   Calibration
-       Needs to be run once, output data stored in EEPROM
-
  */
 {
   public:
     Drive_wrapper(int pin_l, int pin_r, int pin_le, int pin_re, int log_length);
     ~Drive_wrapper();
     void drive(int speed, int* flag);
-    void turn(int left_turn, int right_turn);
     void run(); //Drive cog function. Combine this cog with decision cog?
+    void turn_left(void) { turn(1,0); }
+    void turn_right(void) { turn(0,1); }
   
   private:
+    void turn(int left_turn, int right_turn);
     int cur_pos_x;
     int cur_pos_y;
     int orientation;

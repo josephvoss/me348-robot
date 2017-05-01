@@ -57,7 +57,10 @@ void Drive_wrapper::drive(int speed, int* flag_drive)
     //   0
     // 3   1
     //   2
-    
+
+    //Only updates current position after stopped - no way to do real time
+    //sensing
+
     //ugly code block but at least it's reasonable
     x = 0; y = 0;
     if (orientation == 0) y = 1;
