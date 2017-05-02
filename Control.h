@@ -3,9 +3,7 @@
 
 typedef struct 
 {
-    int l_flag;
-    int r_flag;
-    int s_flag;
+    int dir_arr[4];
     int pos_x;
     int pos_y;
 } Decide_tuple;
@@ -15,7 +13,7 @@ class Control
     public:
         Control(Ping_sensor* ping_in, Drive_wrapper* drive_in);
         ~Control();
-        void decide(int l, int r, int s);
+        void decide(int* arr);
         void main(void); // data needs to be of constant format
         Decide_tuple* decide_arr; // length 10 for now
     

@@ -26,6 +26,7 @@ class Drive_wrapper
     void turn_right(void) { turn(0,1); }
     int get_pos_x(void)  { return cur_pos_x; }
     int get_pos_y(void)  { return cur_pos_y; }
+    int get_orientation(void) { return orientation; }
     void set_flag(int* drive_flag) { flag = drive_flag; }
   
   private:
