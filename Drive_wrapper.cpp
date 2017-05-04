@@ -50,15 +50,11 @@ void Drive_wrapper::run(void)
 
 void Drive_wrapper::drive(int speed)
 {
-    //Ask for sensor data every 15 ticks?
-    int x = 0; int y = 0; int l_count; int r_count;
-    while (*flag)
-    {
-        drive_speed(speed, speed); // blocking
-        
-        //Log?
-        //Set Sensor flag?
-    }
+    drive_speed(speed, speed); // blocking
+}
+
+void Drive_wrapper::update_position()
+{
     drive_speed(0,0);
     drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
     

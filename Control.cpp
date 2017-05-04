@@ -148,27 +148,35 @@ void Control::main(void)
         //      Line in front
         //      Space to the left
         //      Space to the right
-        while(dist_s > 15 || dist_r < 10 || dist_l < 10)
-        {
         
+        //Start drive
+        int x = 0; int y = 0; int l_count; int r_count;
+
+        driver->drive(10);
+        
+        pause(100);
+        while(dist_s < 15 || dist_r > 10 || dist_l > 10)
+        {
+            //Start sensor
+            ping->read();
             dist_l = sensor_data->ping[0];
             dist_s = sensor_data->ping[1];
             dist_r = sensor_data->ping[2];
         }
-        *drive_flag = 0;
-        *sense_flag = 0;
         
+        //Update current position
         int orientation = driver->get_orientation();
+        driver->update_position();
     
         //Set directional readings into coordinate positions
         int cardinal_arr[4];
         cardinal_arr[(orientation-1)%4] = dist_l;
         cardinal_arr[(orientation+1)%4] = dist_r;
         cardinal_arr[orientation % 4] = dist_s;
+        
+        //Send cardinal_arr to labview
 
         decide((int* )cardinal_arr); // Turn either left, right, or neither
-        *drive_flag = 1;
-        pause(1000);
-        *sense_flag = 1;
+
     }
 }

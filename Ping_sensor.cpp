@@ -45,7 +45,7 @@ void Ping_sensor::run(void)
       while(*flag)
       {
           this->read();
-          pause(200);
+          pause(500);
       }
   }
 }  
@@ -54,13 +54,13 @@ void Ping_sensor::read(void)
 {
     Sensor_data new_read;
     servo_angle(pin_servo, 0);
-    pause(100);
-    for (int i=0; i<3; i++)
+    pause(500);
+    for (int x=0; x<3; x++)
     {
-      servo_angle(pin_servo, angle_arr[i]);
+      servo_angle(pin_servo, angle_arr[x]);
       pause(100);
-      new_read.ping[i] = ping_cm(pin_ping);
-      pause(100); //wait 1th of a second
+      new_read.ping[x] = ping_cm(pin_ping);
+      pause(500); //wait 1th of a second
     }
     
     // Add QTI and IR reads here
