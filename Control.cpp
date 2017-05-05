@@ -56,6 +56,8 @@ void Control::decide(int* cardinal_arr)
            {  options++; current.dir_arr[i] = 1; }
     }      
 
+    printf("No. of options available: %d\n",options);
+
     //Find only direction avail
     if (options == 1)
     {
@@ -163,7 +165,10 @@ void Control::main(void)
             dist_s = sensor_data->ping[1];
             dist_r = sensor_data->ping[2];
         }
-        
+       
+        printf("Triggered\n");
+        printf("L: %d, R: %d, S: %d\n",dist_l, dist_r, dist_s);
+
         //Update current position
         int orientation = driver->get_orientation();
         driver->update_position();
@@ -176,6 +181,7 @@ void Control::main(void)
         
         //Send cardinal_arr to labview
 
+        printf("Deciding\n");
         decide((int* )cardinal_arr); // Turn either left, right, or neither
 
     }

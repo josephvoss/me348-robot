@@ -83,9 +83,11 @@ void Drive_wrapper::turn(int turnLeft, int turnRight)
     //Logic to take care of count amounts to turn each wheel
     // and to update the orientation of the bot
     if (turnLeft) { l_count_d = -25; r_count_d = 26;
-                    orientation = (orientation - 1) % 4;}
+                    orientation = (orientation - 1) % 4;
+                    printf("Turned left\n");};
     if (turnRight) { l_count_d = 26; r_count_d = -25;
-                     orientation = (orientation + 1) % 4;}
+                     orientation = (orientation + 1) % 4;
+                     printf("Turned right\n");};
     
     //90 deg turn
     drive_goto(l_count_d,r_count_d);
