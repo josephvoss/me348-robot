@@ -58,9 +58,8 @@ void Ping_sensor::read(void)
     for (int x=0; x<3; x++)
     {
       servo_angle(pin_servo, angle_arr[x]);
-      pause(100);
+      pause(500);
       new_read.ping[x] = ping_cm(pin_ping);
-      pause(500); //wait 1th of a second
     }
     
     // Add QTI and IR reads here

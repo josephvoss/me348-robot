@@ -55,6 +55,7 @@ void Drive_wrapper::drive(int speed)
 
 void Drive_wrapper::update_position()
 {
+    int x, y, l_count, r_count;
     drive_speed(0,0);
     drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
     
