@@ -38,21 +38,26 @@ void Control::decide(int* cardinal_arr)
     current.pos_y = driver->get_pos_y();
     int orientation = driver->get_orientation();
     
+    printf("Orientation: %d\n", orientation);
+    for (int i = 0; i < 4; i++)
+        printf("%d ", cardinal_arr[i]);
+    printf("\n");
+    
     // Assume only option is forward
-    current.dir_arr[0] = 1;
-    int options = 1;
+    current.dir_arr[0] = 0;
+    int options = 0;
     for (int i = 0; i < 4; i++)
     {
         //If straight
-        if (i == orientation && cardinal_arr[i] < 15)
-            { options--; current.dir_arr[i] = 0; }
+        if (i == orientation && cardinal_arr[i] > 15)
+            { options++; current.dir_arr[i] = 1; }
         
         //If right
-        if (i == orientation + 1 && cardinal_arr[i] > 10)
+        if (i == orientation + 1 && cardinal_arr[i] > 15)
             { options++; current.dir_arr[i] = 1; }
         
         //If left
-        if (i == orientation - 1 && cardinal_arr[i] > 10)
+        if (i == orientation - 1 && cardinal_arr[i] > 15)
            {  options++; current.dir_arr[i] = 1; }
     }      
 
@@ -180,7 +185,12 @@ void Control::main(void)
     
         //Set directional readings into coordinate positions
         int cardinal_arr[4];
-        cardinal_arr[(orientation-1)%4] = dist_l;
+        for (int i = 0; i < 4; i++) cardinal_arr[i]=0;
+
+        int left_orient = 0;
+        if ((orientation - 1) < 0) left_orient = (orientation+3) % 4;
+        else left_orient = -1 * (orientation-1) % 4;
+        cardinal_arr[left_orient] = dist_l;
         cardinal_arr[(orientation+1)%4] = dist_r;
         cardinal_arr[orientation % 4] = dist_s;
         
