@@ -93,10 +93,4 @@ void Drive_wrapper::turn(int turnLeft, int turnRight)
     //90 deg turn
     drive_goto(l_count_d,r_count_d);
     
-    //Overshoot protection (But only protects from 1?
-    drive_getTicks(&l_count_e, &r_count_e); //Calc actual no. travelled
-    l_count_d = l_count_d - l_count_e;
-    r_count_d = r_count_d - r_count_e;
-    drive_goto(l_count_d,r_count_d);
-    
 }  
