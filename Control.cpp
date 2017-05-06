@@ -94,7 +94,8 @@ void Control::decide(int* cardinal_arr)
     //Decide on direction
     if (options > 2)
     {
-        int dir = rand() % options;
+        //Only decide on direction based on 3 directions 
+        int dir = rand() % (options-1);
         int i;
         for (int x = 0; x < 4; x++)
         {
@@ -182,12 +183,13 @@ void Control::main(void)
         //CHANGE dist_r and dist_l to < instead of >
         while(dist_s > 15  && dist_r < 15 && dist_l < 15)
         {
-            //Start sensor
-            ping->read();
             dist_r = sensor_data->ping[0];
             dist_s = sensor_data->ping[1];
             dist_l = sensor_data->ping[2];
             printf("L: %d, R: %d, S: %d\n",dist_l, dist_r, dist_s);
+            //Start sensor
+            ping->read();
+
         }
        
         printf("Triggered\n");
