@@ -41,7 +41,7 @@ void Control::decide(int* cardinal_arr)
 
     int l_orient;
     if ((orientation - 1) < 0) l_orient = (orientation+3) % 4;
-    else l_orient = -1 * (orientation-1) % 4;
+    else l_orient = (orientation-1) % 4;
     int r_orient = (orientation + 1) % 4;
     int s_orient = orientation;
     
@@ -77,18 +77,18 @@ void Control::decide(int* cardinal_arr)
     //Find only direction avail
     if (options == 2)
     {
-        for (int i = 0; i++; i< 4)
+        for (int i = 0; i < 4; i++)
         {
             if (current.dir_arr[i] == 1 && i == l_orient)
-                { driver->turn_left(); }
+                { driver->turn_left(); break;}
             if (current.dir_arr[i] == 1 && i == r_orient)
-                { driver->turn_right(); }
+                { driver->turn_right(); break;}
                 
         }        
     }
 
     //Decide on direction
-    if (options > 1)
+    if (options > 2)
     {
         int dir = rand() % options;
         int i;
