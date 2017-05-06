@@ -52,8 +52,9 @@ void Control::decide(int* cardinal_arr)
     
     // Find number of options available
     for (int i = 0; i < 4; i++) current.dir_arr[i] = 0;
+    // Always have an option behind you
     current.dir_arr[2] = 1;
-    int options = 0;
+    int options = 1;
     for (int i = 0; i < 4; i++)
     {
         //If straight
@@ -70,21 +71,19 @@ void Control::decide(int* cardinal_arr)
     }      
 
     printf("No. of options available: %d\n",options);
+    for (int i = 0; i < 4; i++)
+        printf("%d ", current.dir_arr[i]);
 
     //Find only direction avail
-    if (options == 1)
+    if (options == 2)
     {
         for (int i = 0; i++; i< 4)
         {
-            if (current.dir_arr[i] && i == orientation - 1)
-                { driver->turn_left(); break; }
-            if (current.dir_arr[i] && i == orientation + 1)
-                { driver->turn_right(); break; }
+            if (current.dir_arr[i] == 1 && i == l_orient)
+                { driver->turn_left(); }
+            if (current.dir_arr[i] == 1 && i == r_orient)
+                { driver->turn_right(); }
                 
-            //Should never trigger here, 
-            //if straight was only option should have continued                
-            if (current.dir_arr[i] && i == orientation)
-                printf("Error!\n");
         }        
     }
 
@@ -96,16 +95,16 @@ void Control::decide(int* cardinal_arr)
         for (int x = 0; x < 4; x++)
         {
             i = (x+dir) % 4;
-            if (current.dir_arr[i] && i == orientation - 1)
+            if (current.dir_arr[i] == 1 && i == l_orient)
                 { driver->turn_left(); break; }
-            if (current.dir_arr[i] && i == orientation + 1)
+            if (current.dir_arr[i] == 1 && i == r_orient)
                 { driver->turn_right(); break; }       
-            if (current.dir_arr[i] && i == orientation)
+            if (current.dir_arr[i] == 1 && i == s_orient)
                 { break; }
         }
     }
 
-    if (options == 0) 
+    if (options == 1) 
     {
        if (decide_count == 0) 
            printf("Error! Should have 1 decision made before gets stuck\n");
@@ -142,6 +141,7 @@ void Control::decide(int* cardinal_arr)
 
     //Log decision
     decide_arr[decide_count] = current;
+    decide_count++;
 }
 
 void Control::main(void)
@@ -175,7 +175,7 @@ void Control::main(void)
         pause(100);
         //Continue until sees a gap or a wall
         //CHANGE dist_r and dist_l to < instead of >
-        while(dist_s > 15  && dist_r > 15 && dist_l > 15)
+        while(dist_s > 15  && dist_r < 15 && dist_l < 15)
         {
             //Start sensor
             ping->read();
