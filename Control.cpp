@@ -37,27 +37,34 @@ void Control::decide(int* cardinal_arr)
     current.pos_x = driver->get_pos_x(); 
     current.pos_y = driver->get_pos_y();
     int orientation = driver->get_orientation();
+    //Convert orientation to 0-4 range
+
+    int l_orient;
+    if ((orientation - 1) < 0) l_orient = (orientation+3) % 4;
+    else l_orient = -1 * (orientation-1) % 4;
+    int r_orient = (orientation + 1) % 4;
+    int s_orient = orientation;
     
     printf("Orientation: %d\n", orientation);
     for (int i = 0; i < 4; i++)
         printf("%d ", cardinal_arr[i]);
     printf("\n");
     
-    // Assume only option is forward
+    // Find number of options available
     current.dir_arr[0] = 0;
     int options = 0;
     for (int i = 0; i < 4; i++)
     {
         //If straight
-        if (i == orientation && cardinal_arr[i] > 15)
+        if (i == s_orient && cardinal_arr[i] > 15)
             { options++; current.dir_arr[i] = 1; }
         
         //If right
-        if (i == orientation + 1 && cardinal_arr[i] > 15)
+        if (i == r_orient && cardinal_arr[i] > 15)
             { options++; current.dir_arr[i] = 1; }
         
         //If left
-        if (i == orientation - 1 && cardinal_arr[i] > 15)
+        if (i == l_orient && cardinal_arr[i] > 15)
            {  options++; current.dir_arr[i] = 1; }
     }      
 
@@ -165,7 +172,8 @@ void Control::main(void)
         dist_s = sensor_data->ping[1];
         dist_l = sensor_data->ping[2];
         pause(100);
-        //Continue until sees a gap or a while
+        //Continue until sees a gap or a wall
+        //CHANGE dist_r and dist_l to < instead of >
         while(dist_s > 15  && dist_r > 15 && dist_l > 15)
         {
             //Start sensor
