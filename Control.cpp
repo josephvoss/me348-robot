@@ -97,7 +97,7 @@ void Control::decide(int* cardinal_arr)
         //Only decide on direction based on 3 directions 
         int dir = rand() % (options-1);
         int i;
-        for (int x = 0; x < 4; x++)
+        for (int x = rand() % 4; x < 4; x++)
         {
             i = (x+dir) % 4;
             if (current.dir_arr[i] == 1 && i == l_orient)
