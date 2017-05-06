@@ -51,7 +51,8 @@ void Control::decide(int* cardinal_arr)
     printf("\n");
     
     // Find number of options available
-    current.dir_arr[0] = 0;
+    for (int i = 0; i < 4; i++) current.dir_arr[i] = 0;
+    current.dir_arr[2] = 1;
     int options = 0;
     for (int i = 0; i < 4; i++)
     {
