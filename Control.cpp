@@ -37,13 +37,17 @@ void Control::decide(int* cardinal_arr)
     current.pos_x = driver->get_pos_x(); 
     current.pos_y = driver->get_pos_y();
     int orientation = driver->get_orientation();
+    
     //Convert orientation to 0-4 range
-
-    int l_orient;
+    //Get orientation of left, right, straight, and behind 
+    //in terms of cardinal directions
+    int l_orient, b_orient;
     if ((orientation - 1) < 0) l_orient = (orientation+3) % 4;
     else l_orient = (orientation-1) % 4;
     int r_orient = (orientation + 1) % 4;
     int s_orient = orientation;
+    if ((orientation - 2) < 0) b_orient = (orientation+2) % 4;
+    else b_orient = (orientation-2) % 4;
     
     printf("Orientation: %d\n", orientation);
     for (int i = 0; i < 4; i++)
@@ -106,6 +110,7 @@ void Control::decide(int* cardinal_arr)
 
     if (options == 1) 
     {
+       printf("Stuck! Go back to last decision\n");
        if (decide_count == 0) 
            printf("Error! Should have 1 decision made before gets stuck\n");
        else
@@ -198,7 +203,7 @@ void Control::main(void)
 
         int left_orient = 0;
         if ((orientation - 1) < 0) left_orient = (orientation+3) % 4;
-        else left_orient = -1 * (orientation-1) % 4;
+        else left_orient = (orientation-1) % 4;
         cardinal_arr[left_orient] = dist_l;
         cardinal_arr[(orientation+1)%4] = dist_r;
         cardinal_arr[orientation % 4] = dist_s;
