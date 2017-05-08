@@ -60,13 +60,12 @@ void Ping_sensor::read(void)
     for (int x=0; x<num_pts; x++)
     {
       servo_angle(pin_servo, angle_arr[x]);
-      pause(500);
-      int num_avg = 10;
+      int num_avg = 5;
       int ping_dist = 0;
+      pause(1000);
       for (int i=0; i<num_avg; i++)
       {
         ping_dist += ping_cm(pin_ping);
-        
       }
       
       new_read.ping[x] = ping_dist/num_avg;

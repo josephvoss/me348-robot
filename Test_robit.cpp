@@ -17,7 +17,7 @@ void init_all()
 	Also search for walls 
 */
     pause(2000);
-    printf("Initialized Successfully\n");
+    printf("Initialized Successfully\n\n\n");
 }
 
 void exit_all()
