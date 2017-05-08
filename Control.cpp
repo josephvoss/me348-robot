@@ -15,7 +15,7 @@ Control::Control(Ping_sensor* ping_in, Drive_wrapper* drive_in)
     sense_flag = (int*) malloc(sizeof(int));
     decide_arr = (Decide_tuple*) malloc(sizeof(Decide_tuple)*10);
     decide_count = 0;
-    
+
     ping->set_flag(sense_flag);
     driver->set_flag(drive_flag);
 }
@@ -34,12 +34,12 @@ void Control::decide(int* cardinal_arr)
 {
     //Make decision tuple
     Decide_tuple current;
-    current.pos_x = driver->get_pos_x(); 
+    current.pos_x = driver->get_pos_x();
     current.pos_y = driver->get_pos_y();
     int orientation = driver->get_orientation();
-    
+
     //Convert orientation to 0-4 range
-    //Get orientation of left, right, straight, and behind 
+    //Get orientation of left, right, straight, and behind
     //in terms of cardinal directions
     int l_orient, b_orient;
     if ((orientation - 1) < 0) l_orient = (orientation+3) % 4;
@@ -48,12 +48,12 @@ void Control::decide(int* cardinal_arr)
     int s_orient = orientation;
     if ((orientation - 2) < 0) b_orient = (orientation+2) % 4;
     else b_orient = (orientation-2) % 4;
-    
+
     printf("Orientation: %d\n", orientation);
     for (int i = 0; i < 4; i++)
         printf("%d ", cardinal_arr[i]);
     printf("\n");
-    
+
     // Find number of options available
     for (int i = 0; i < 4; i++) current.dir_arr[i] = 0;
     // Always have an option behind you
@@ -64,15 +64,15 @@ void Control::decide(int* cardinal_arr)
         //If straight
         if (i == s_orient && cardinal_arr[i] > 15)
             { options++; current.dir_arr[i] = 1; }
-        
+
         //If right
         if (i == r_orient && cardinal_arr[i] > 15)
             { options++; current.dir_arr[i] = 1; }
-        
+
         //If left
         if (i == l_orient && cardinal_arr[i] > 15)
            {  options++; current.dir_arr[i] = 1; }
-    }      
+    }
 
     printf("No. of options available: %d\n",options);
     for (int i = 0; i < 4; i++)
@@ -87,14 +87,14 @@ void Control::decide(int* cardinal_arr)
                 { driver->turn_left(); break;}
             if (current.dir_arr[i] == 1 && i == r_orient)
                 { driver->turn_right(); break;}
-                
-        }        
+
+        }
     }
 
     //Decide on direction
     if (options > 2)
     {
-        //Only decide on direction based on 3 directions 
+        //Only decide on direction based on 3 directions
         int dir = rand() % (options-1);
         int i;
         for (int x = rand() % 4; x < 4; x++)
@@ -103,45 +103,45 @@ void Control::decide(int* cardinal_arr)
             if (current.dir_arr[i] == 1 && i == l_orient)
                 { driver->turn_left(); break; }
             if (current.dir_arr[i] == 1 && i == r_orient)
-                { driver->turn_right(); break; }       
+                { driver->turn_right(); break; }
             if (current.dir_arr[i] == 1 && i == s_orient)
                 { break; }
         }
     }
 
-    if (options == 1) 
+    if (options == 1)
     {
        printf("Stuck! Go back to last decision\n");
-       if (decide_count == 0) 
+       if (decide_count == 0)
            printf("Error! Should have 1 decision made before gets stuck\n");
        else
        {
            //Turn around and go to last decision point, take road not travelled
            driver->turn_left();
            driver->turn_right();
-           
+
            Decide_tuple old = decide_arr[decide_count - 1];
            int delx = current.pos_x - old.pos_x;
            int dely = current.pos_y - old.pos_y;
            if (delx != 0) drive_goto(delx, delx);
            if (dely != 0) drive_goto(dely, dely);
-           
-           //Setup new sensor data array, set positions able to travel with distance 
+
+           //Setup new sensor data array, set positions able to travel with distance
            //of 20cm free
            int* new_cardinal_arr = (int*) old.dir_arr;
            for (int i = 0; i<4; i++)
               new_cardinal_arr[i] *= 20;
-           
+
            //Set route taken previously sensor readings to <10
            //artificially blocks route?
            if (delx < 0) new_cardinal_arr[3] = 5;
            if (delx > 0) new_cardinal_arr[1] = 5;
            if (dely < 0) new_cardinal_arr[0] = 5;
            if (dely > 0) new_cardinal_arr[2] = 5;
-           
+
            //Call function recursively
            decide( (int*) new_cardinal_arr);
-           
+
        }
     }
 
@@ -169,12 +169,12 @@ void Control::main(void)
         //      Line in front
         //      Space to the left
         //      Space to the right
-        
+
         //Start drive
         int x = 0; int y = 0; int l_count; int r_count;
 
         driver->drive(10);
-        ping->read();        
+        ping->read();
         dist_r = sensor_data->ping[0];
         dist_s = sensor_data->ping[1];
         dist_l = sensor_data->ping[2];
@@ -191,14 +191,14 @@ void Control::main(void)
             ping->read();
 
         }
-       
+
         printf("Triggered\n");
         printf("L: %d, R: %d, S: %d\n",dist_l, dist_r, dist_s);
 
         //Update current position
         int orientation = driver->get_orientation();
         driver->update_position();
-    
+
         //Set directional readings into coordinate positions
         int cardinal_arr[4];
         for (int i = 0; i < 4; i++) cardinal_arr[i]=0;
@@ -209,7 +209,7 @@ void Control::main(void)
         cardinal_arr[left_orient] = dist_l;
         cardinal_arr[(orientation+1)%4] = dist_r;
         cardinal_arr[orientation % 4] = dist_s;
-        
+
         //Send cardinal_arr to labview
 
         printf("Deciding\n");

@@ -1,5 +1,8 @@
 #include <stdio.h>            // Recommended over iostream for saving space
 #include <propeller.h>        // Propeller-specific functions
+#include "ping.h"
+#include "servo.h"
+#include "abdrive.h"
 
 #include "Control.h"
 

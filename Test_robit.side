@@ -15,6 +15,12 @@ Control.cpp
 Control.h
 Drive_wrapper.cpp
 Drive_wrapper.h
+-I ./../SimpleIDE/SimpleIDE/Learn/Simple Libraries/Sensor/libping
+-L ./../SimpleIDE/SimpleIDE/Learn/Simple Libraries/Sensor/libping
+-I ./../SimpleIDE/SimpleIDE/Learn/Simple Libraries/Motor/libservo
+-L ./../SimpleIDE/SimpleIDE/Learn/Simple Libraries/Motor/libservo
+-I ./../SimpleIDE/SimpleIDE/Learn/Simple Libraries/Robotics/ActivityBot/libabdrive
+-L ./../SimpleIDE/SimpleIDE/Learn/Simple Libraries/Robotics/ActivityBot/libabdrive
 >compiler=C++
 >memtype=cmm main ram compact
 >optimize=-Os
