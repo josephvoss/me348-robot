@@ -13,7 +13,7 @@ Control::Control(Ping_sensor* ping_in, Drive_wrapper* drive_in)
 
     drive_flag = (int*) malloc(sizeof(int));
     sense_flag = (int*) malloc(sizeof(int));
-    decide_arr = (Decide_tuple*) malloc(sizeof(Decide_tuple)*10);
+    decide_arr = (Decide_tuple*) malloc(sizeof(Decide_tuple)*20);
     decide_count = 0;
     
     ping->set_flag(sense_flag);
@@ -48,6 +48,9 @@ void Control::decide(int* cardinal_arr)
     int s_orient = orientation;
     if ((orientation - 2) < 0) b_orient = (orientation+2) % 4;
     else b_orient = (orientation-2) % 4;
+
+    // Always have an option behind you
+    cardinal_arr[b_orient] = 30;
     
     printf("Orientation: %d\n", orientation);
     for (int i = 0; i < 4; i++)
@@ -56,9 +59,7 @@ void Control::decide(int* cardinal_arr)
     
     // Find number of options available
     for (int i = 0; i < 4; i++) current.dir_arr[i] = 0;
-    // Always have an option behind you
-    current.dir_arr[2] = 1;
-    int options = 1;
+    int options = 0;
     for (int i = 0; i < 4; i++)
     {
         //If straight
@@ -71,12 +72,17 @@ void Control::decide(int* cardinal_arr)
         
         //If left
         if (i == l_orient && cardinal_arr[i] > 15)
-           {  options++; current.dir_arr[i] = 1; }
+            { options++; current.dir_arr[i] = 1; }
+           
+        //If behind
+        if (i == b_orient && cardinal_arr[i] > 15)
+            { options++; current.dir_arr[i] = 1; }
     }      
 
     printf("No. of options available: %d\n",options);
     for (int i = 0; i < 4; i++)
         printf("%d ", current.dir_arr[i]);
+    printf("\n");
 
     //Find only direction avail
     if (options == 2)
@@ -127,10 +133,10 @@ void Control::decide(int* cardinal_arr)
            if (dely != 0) drive_goto(dely, dely);
            
            //Setup new sensor data array, set positions able to travel with distance 
-           //of 20cm free
+           //of 30cm free
            int* new_cardinal_arr = (int*) old.dir_arr;
            for (int i = 0; i<4; i++)
-              new_cardinal_arr[i] *= 20;
+              new_cardinal_arr[i] *= 30;
            
            //Set route taken previously sensor readings to <10
            //artificially blocks route?
@@ -139,14 +145,20 @@ void Control::decide(int* cardinal_arr)
            if (dely < 0) new_cardinal_arr[0] = 5;
            if (dely > 0) new_cardinal_arr[2] = 5;
            
+           for (int i = 0; i<4; i++)
+              printf(" %d", new_cardinal_arr[i]);
+           printf("\n");
+           
            //Call function recursively
            decide( (int*) new_cardinal_arr);
            
        }
     }
 
+    printf("Trying to log\n");
     //Log decision
     decide_arr[decide_count] = current;
+    printf("Logged\n");
     decide_count++;
 }
 
