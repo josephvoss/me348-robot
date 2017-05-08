@@ -124,7 +124,7 @@ void Control::decide(int* cardinal_arr)
        {
            //Turn around and go to last decision point, take road not travelled
            driver->turn_left();
-           driver->turn_right();
+           driver->turn_left();
            
            Decide_tuple old = decide_arr[decide_count - 1];
            int delx = current.pos_x - old.pos_x;
@@ -155,10 +155,13 @@ void Control::decide(int* cardinal_arr)
        }
     }
 
-    printf("Trying to log\n");
     //Log decision
     decide_arr[decide_count] = current;
     printf("Logged\n");
+    printf("(%d, %d):", current.pos_x, current.pos_y);
+    for (int i = 0; i<4; i++)
+      printf(" %d", current.dir_arr[i]);
+    printf("\n");
     decide_count++;
 }
 
