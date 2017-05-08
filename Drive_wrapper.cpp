@@ -48,9 +48,9 @@ void Drive_wrapper::run(void)
     } 
 }
 
-void Drive_wrapper::drive(int speed)
+void Drive_wrapper::drive(int distance)
 {
-    drive_speed(speed, speed); // blocking
+    drive_goto(distance, distance); // blocking
 }
 
 void Drive_wrapper::update_position()
