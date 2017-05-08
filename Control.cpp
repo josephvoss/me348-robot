@@ -170,13 +170,7 @@ void Control::main(void)
     //Pointer to data address being updated by sensor class
     Sensor_data* sensor_data = &(ping->data);
 
-    //Pass sense_flag address to sense function
-    *sense_flag = 1;
-
-    //Pass drive_flag address to drive function
-    *drive_flag = 1;
-
-    int dist_r=20; int dist_l=20; int dist_s=20;
+    int dist_r=10; int dist_l=10; int dist_s=20;
     while (1)
     {
         // Cases in which to stop moving
@@ -187,24 +181,16 @@ void Control::main(void)
         
         //Start drive
         int x = 0; int y = 0; int l_count; int r_count;
-
-        driver->drive(10);
-        ping->read();        
-        dist_r = sensor_data->ping[0];
-        dist_s = sensor_data->ping[1];
-        dist_l = sensor_data->ping[2];
         pause(100);
         //Continue until sees a gap or a wall
-        //CHANGE dist_r and dist_l to < instead of >
         while(dist_s > 15  && dist_r < 15 && dist_l < 15)
-        {
+        {     
+            ping->read();        
             dist_r = sensor_data->ping[0];
             dist_s = sensor_data->ping[1];
             dist_l = sensor_data->ping[2];
             printf("L: %d, R: %d, S: %d\n",dist_l, dist_r, dist_s);
-            //Start sensor
-            ping->read();
-
+            driver->drive(92);
         }
        
         printf("Triggered\n");
