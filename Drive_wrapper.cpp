@@ -50,15 +50,12 @@ void Drive_wrapper::run(void)
 
 void Drive_wrapper::drive(int speed)
 {
-    //Ask for sensor data every 15 ticks?
-    int x = 0; int y = 0; int l_count; int r_count;
-    while (*flag)
-    {
-        drive_speed(speed, speed); // blocking
-        
-        //Log?
-        //Set Sensor flag?
-    }
+    drive_speed(speed, speed); // blocking
+}
+
+void Drive_wrapper::update_position()
+{
+    int x, y, l_count, r_count;
     drive_speed(0,0);
     drive_getTicks(&l_count, &r_count); //Calc actual no. travelled
     
@@ -87,17 +84,16 @@ void Drive_wrapper::turn(int turnLeft, int turnRight)
     //Logic to take care of count amounts to turn each wheel
     // and to update the orientation of the bot
     if (turnLeft) { l_count_d = -25; r_count_d = 26;
-                    orientation = (orientation - 1) % 4;}
+                    orientation = orientation - 1;
+                    printf("Turned left\n");};
     if (turnRight) { l_count_d = 26; r_count_d = -25;
-                     orientation = (orientation + 1) % 4;}
+                     orientation = orientation + 1;
+                     printf("Turned right\n");};
+    
+    if (orientation < 0) orientation = (orientation + 4) % 4;
+    else orientation = orientation % 4;
     
     //90 deg turn
-    drive_goto(l_count_d,r_count_d);
-    
-    //Overshoot protection (But only protects from 1?
-    drive_getTicks(&l_count_e, &r_count_e); //Calc actual no. travelled
-    l_count_d = l_count_d - l_count_e;
-    r_count_d = r_count_d - r_count_e;
     drive_goto(l_count_d,r_count_d);
     
 }  

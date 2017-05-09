@@ -24,6 +24,7 @@ class Drive_wrapper
     void run(); //Drive cog function. Combine this cog with decision cog?
     void turn_left(void) { turn(1,0); }
     void turn_right(void) { turn(0,1); }
+    void update_position(void);
     int get_pos_x(void)  { return cur_pos_x; }
     int get_pos_y(void)  { return cur_pos_y; }
     int get_orientation(void) { return orientation; }

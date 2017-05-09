@@ -38,60 +38,80 @@ void Control::decide(int* cardinal_arr)
     current.pos_y = driver->get_pos_y();
     int orientation = driver->get_orientation();
     
-    // Assume only option is forward
-    current.dir_arr[0] = 1;
+    //Convert orientation to 0-4 range
+    //Get orientation of left, right, straight, and behind 
+    //in terms of cardinal directions
+    int l_orient, b_orient;
+    if ((orientation - 1) < 0) l_orient = (orientation+3) % 4;
+    else l_orient = (orientation-1) % 4;
+    int r_orient = (orientation + 1) % 4;
+    int s_orient = orientation;
+    if ((orientation - 2) < 0) b_orient = (orientation+2) % 4;
+    else b_orient = (orientation-2) % 4;
+    
+    printf("Orientation: %d\n", orientation);
+    for (int i = 0; i < 4; i++)
+        printf("%d ", cardinal_arr[i]);
+    printf("\n");
+    
+    // Find number of options available
+    for (int i = 0; i < 4; i++) current.dir_arr[i] = 0;
+    // Always have an option behind you
+    current.dir_arr[2] = 1;
     int options = 1;
     for (int i = 0; i < 4; i++)
     {
         //If straight
-        if (i == orientation && cardinal_arr[i] < 15)
-            { options--; current.dir_arr[i] = 0; }
+        if (i == s_orient && cardinal_arr[i] > 15)
+            { options++; current.dir_arr[i] = 1; }
         
         //If right
-        if (i == orientation + 1 && cardinal_arr[i] > 10)
+        if (i == r_orient && cardinal_arr[i] > 15)
             { options++; current.dir_arr[i] = 1; }
         
         //If left
-        if (i == orientation - 1 && cardinal_arr[i] > 10)
+        if (i == l_orient && cardinal_arr[i] > 15)
            {  options++; current.dir_arr[i] = 1; }
     }      
 
+    printf("No. of options available: %d\n",options);
+    for (int i = 0; i < 4; i++)
+        printf("%d ", current.dir_arr[i]);
+
     //Find only direction avail
-    if (options == 1)
+    if (options == 2)
     {
-        for (int i = 0; i++; i< 4)
+        for (int i = 0; i < 4; i++)
         {
-            if (current.dir_arr[i] && i == orientation - 1)
-                { driver->turn_left(); break; }
-            if (current.dir_arr[i] && i == orientation + 1)
-                { driver->turn_right(); break; }
+            if (current.dir_arr[i] == 1 && i == l_orient)
+                { driver->turn_left(); break;}
+            if (current.dir_arr[i] == 1 && i == r_orient)
+                { driver->turn_right(); break;}
                 
-            //Should never trigger here, 
-            //if straight was only option should have continued                
-            if (current.dir_arr[i] && i == orientation)
-                printf("Error!\n");
         }        
     }
 
     //Decide on direction
-    if (options > 1)
+    if (options > 2)
     {
-        int dir = rand() % options;
+        //Only decide on direction based on 3 directions 
+        int dir = rand() % (options-1);
         int i;
-        for (int x = 0; x < 4; x++)
+        for (int x = rand() % 4; x < 4; x++)
         {
             i = (x+dir) % 4;
-            if (current.dir_arr[i] && i == orientation - 1)
+            if (current.dir_arr[i] == 1 && i == l_orient)
                 { driver->turn_left(); break; }
-            if (current.dir_arr[i] && i == orientation + 1)
+            if (current.dir_arr[i] == 1 && i == r_orient)
                 { driver->turn_right(); break; }       
-            if (current.dir_arr[i] && i == orientation)
+            if (current.dir_arr[i] == 1 && i == s_orient)
                 { break; }
         }
     }
 
-    if (options == 0) 
+    if (options == 1) 
     {
+       printf("Stuck! Go back to last decision\n");
        if (decide_count == 0) 
            printf("Error! Should have 1 decision made before gets stuck\n");
        else
@@ -127,6 +147,7 @@ void Control::decide(int* cardinal_arr)
 
     //Log decision
     decide_arr[decide_count] = current;
+    decide_count++;
 }
 
 void Control::main(void)
@@ -140,7 +161,7 @@ void Control::main(void)
     //Pass drive_flag address to drive function
     *drive_flag = 1;
 
-    int dist_r=5; int dist_l=5; int dist_s=20;
+    int dist_r=20; int dist_l=20; int dist_s=20;
     while (1)
     {
         // Cases in which to stop moving
@@ -148,27 +169,51 @@ void Control::main(void)
         //      Line in front
         //      Space to the left
         //      Space to the right
-        while(dist_s > 15 || dist_r < 10 || dist_l < 10)
+        
+        //Start drive
+        int x = 0; int y = 0; int l_count; int r_count;
+
+        driver->drive(10);
+        ping->read();        
+        dist_r = sensor_data->ping[0];
+        dist_s = sensor_data->ping[1];
+        dist_l = sensor_data->ping[2];
+        pause(100);
+        //Continue until sees a gap or a wall
+        //CHANGE dist_r and dist_l to < instead of >
+        while(dist_s > 15  && dist_r < 15 && dist_l < 15)
         {
-        
-            dist_l = sensor_data->ping[0];
+            dist_r = sensor_data->ping[0];
             dist_s = sensor_data->ping[1];
-            dist_r = sensor_data->ping[2];
+            dist_l = sensor_data->ping[2];
+            printf("L: %d, R: %d, S: %d\n",dist_l, dist_r, dist_s);
+            //Start sensor
+            ping->read();
+
         }
-        *drive_flag = 0;
-        *sense_flag = 0;
-        
+       
+        printf("Triggered\n");
+        printf("L: %d, R: %d, S: %d\n",dist_l, dist_r, dist_s);
+
+        //Update current position
         int orientation = driver->get_orientation();
+        driver->update_position();
     
         //Set directional readings into coordinate positions
         int cardinal_arr[4];
-        cardinal_arr[(orientation-1)%4] = dist_l;
+        for (int i = 0; i < 4; i++) cardinal_arr[i]=0;
+
+        int left_orient = 0;
+        if ((orientation - 1) < 0) left_orient = (orientation+3) % 4;
+        else left_orient = (orientation-1) % 4;
+        cardinal_arr[left_orient] = dist_l;
         cardinal_arr[(orientation+1)%4] = dist_r;
         cardinal_arr[orientation % 4] = dist_s;
+        
+        //Send cardinal_arr to labview
 
+        printf("Deciding\n");
         decide((int* )cardinal_arr); // Turn either left, right, or neither
-        *drive_flag = 1;
-        pause(1000);
-        *sense_flag = 1;
+
     }
 }

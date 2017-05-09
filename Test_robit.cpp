@@ -4,7 +4,7 @@
 #include "Control.h"
 
 //IR and QTI not implemented, pins set to 0
-Ping_sensor turret(16, 19, 0, 0, 0, 0);
+Ping_sensor turret(16, 17, 0, 0, 0, 0);
 Drive_wrapper driver(12, 13, 14, 15);
 
 void init_all()
@@ -23,8 +23,16 @@ void exit_all()
 }  
 
 void sense_run(void*)
-{
-   turret.run();
+{ 
+  while (1 == 1)
+  {
+    for (int i = 0; i<3; i++)
+    {
+      servo_angle(16, 900*i);
+      pause(2000);
+    }       
+  }      
+//   turret.run();   
 }  
 
 void drive_run(void*)
@@ -37,10 +45,9 @@ int main()
     init_all();
 
     Control controller(&turret, &driver);
-    cog_run(*sense_run, 100);
-    cog_run(*drive_run, 100);
+
     controller.main();
-  
+
     return 0;
 }
 
