@@ -4,7 +4,7 @@
 #include "adcDCpropab.h"
 #include "abdrive.h"
 
-static volatile int stopStep,sonarAngle,sonarDis,sonarData[6],direction,move,check,x,y;
+static volatile int stopStep,sonarAngle,sonarDis,sonarData[6],direction,move,x,y;
 unsigned int stack[50];
 
 int ff_arr[6][6];
@@ -85,38 +85,6 @@ void modFF(int** ff, int* goal, int** walls)
   }
     return;
 }
-
-void checkSignal()
-/*
- * Check Signal. No idea.
- *
- * Inputs:
- *      None?
- */
-{
-  int irLeft,irRight,sonarDis;
-    //wall is 0, nothing is 1
-    freqout(11, 1, 38000);                      
-    irLeft = input(10);                         
-    freqout(1, 1, 38000);                       
-    irRight = input(2);
-    sonarDis = ping_cm(17);    
-    
-    if (sonarDis > 20 && irLeft == 0 && irRight == 0)
-    {
-      //can only go straight
-      check = 0;
-      pause(300);
-    }
-    else if (sonarDis <= 20 && irLeft == 0 && irRight == 0)
-    {
-      //dead end, turn back
-      check = 2;
-    }
-    else
-    {check = 1;
-    }      
-}                          
 
 void sensorDec()
 /*
