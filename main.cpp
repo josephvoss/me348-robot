@@ -442,6 +442,6 @@ while(1)
   turn();    
   positionUpdate();
   directionUpdate();
-  //ff_funct(ff_arr,goal,wall_arr);
+  ff_funct((int**) ff_arr,goal, (int**) wall_arr);
 }    
 }
