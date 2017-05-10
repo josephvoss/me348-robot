@@ -15,6 +15,7 @@ unsigned int stack[50];
 int ff_arr[6][6];
 int wall_arr[6][6];
 int goal[2] = {2,2};
+int pos[2] = {5,5};
 
 void ff_funct(int** ff, int* goal, int** walls)
 {
@@ -83,7 +84,7 @@ void ff_funct(int** ff, int* goal, int** walls)
     return;
 }
 
-int ff_follower(int* pos, int* goal, int** ff_arr)
+void ff_follower(int* pos, int* goal, int** ff_arr)
 {
 
 	int x = pos[0];
@@ -174,7 +175,7 @@ int ff_follower(int* pos, int* goal, int** ff_arr)
 			}	
 		}
 	}
-
+  return;
 }
 	
 
@@ -443,5 +444,7 @@ while(1)
   positionUpdate();
   directionUpdate();
   ff_funct((int**) ff_arr,goal, (int**) wall_arr);
+  ff_follower(pos, goal, (int**) ff_arr);
+
 }    
 }
