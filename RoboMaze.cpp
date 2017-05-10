@@ -8,13 +8,87 @@
 #include "adcDCpropab.h"
 #include "abdrive.h"
 
+
 static volatile int stopStep,sonarAngle,sonarDis,sonarData[6],direction,move,check,x,y;
 unsigned int stack[50];
+
+int ff_arr[6][6];
+int walls[6][6];
+int goal[2] = {2,2};
+
+void modFF(int** ff, int* goal, int** walls)
+{
+
+
+  //initialize ff matrix
+  for(int i=0;i<6;i++)
+  {
+    for (int j=0;j<6;j++)
+    {
+      ff[i][j] = 0;
+    }
+  }
+
+  int n = 1;    //ff maze goal
+  ff[goal[0]][goal[1]] = n; //setting location of goal
+
+  while (n < 12)    
+  {
+    for(int i=0; i<6;i++) 
+    {
+      for (int j=0; j<6;j++)
+      {
+        if ((ff[i][j]) == n)    
+        {
+          
+          if (i+1<6)     //CHECK SOUTH
+          {
+            if (ff[i+1][j] != 1 && ff[i+1][j] == 0 && (walls[i][j] & 2) == 0)
+            {
+              ff[i+1][j] = n+1;
+            }
+          }
+
+          if ((i-1)>-1)     //CHECK NORTH
+          {
+            if (ff[i-1][j] != 1 && ff[i-1][j] == 0 && (walls[i][j] & 8) == 0)
+            {
+              ff[i-1][j] = n+1;
+            }
+          }
+
+          if ((j+1)<6)     //CHECK EAST
+          {
+            if (ff[i][j+1] != 1 && ff[i][j+1] == 0 && (walls[i][j] & 4)== 0)
+            {
+              ff[i][j+1] = n+1;
+            }
+          }
+
+          if ((j-1)>-1)     //CHECK WEST
+          {
+            if (ff[i][j-1] != 1 && ff[i][j-1] == 0 && (walls[i][j] & 1) == 0)
+            {
+              ff[i][j-1] = n+1;
+            }
+          }
+        }
+
+
+      }
+    }
+
+    n++;
+  }
+    return;
+}
+
+
 
 void checkSignal()
 {
   int irLeft,irRight,sonarDis;
-
+    //wall is 0, nothing is 1
     freqout(11, 1, 38000);                      
     irLeft = input(10);                         
     freqout(1, 1, 38000);                       
@@ -23,11 +97,13 @@ void checkSignal()
     
     if (sonarDis > 5 && irLeft == 0 && irRight == 0)
     {
+      //can only go straight
       check = 0;
       pause(300);
     }
     else if (sonarDis <= 5 && irLeft == 0 && irRight == 0)
     {
+      //dead end, turn back
       check = 2;
     }
     else

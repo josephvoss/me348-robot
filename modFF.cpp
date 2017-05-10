@@ -69,6 +69,8 @@ while (n < 12)
 
   n++;
 }
+
+
   for(int i=0;i<grid;i++)
   {
     for (int j=0;j<grid;j++)

@@ -13,11 +13,12 @@ walls = np.array([
 	[1,0,0,0,0,4],
 	[3,2,2,2,2,6]
 	])
+print('walls')
 print(walls)
 
 
 n = 1			#goal value
-a[2,3] = n 		#setting location of goal	
+a[2,2] = n 		#setting location of goal	
 
 #print(a)
 
@@ -31,35 +32,35 @@ while n < 12:
 			# print('j is ' + str(j)+'\n')
 		
 			if a[i,j] == n:
-				print('yes')
+				#print('yes')
 				if (i+1)<grid:
 					#Check South side
 					if a[i+1,j] != 1 and a[i+1,j] == 0 and (walls[i,j] & 2 == 0):
-						print('1')
+						#print('1')
 						a[i+1,j] = n+1	
-						print(a)
+						#print(a)
 
 				if (i-1)>-1:
 					#check North
 					if a[i-1,j] != 1 and a[i-1,j] == 0 and (walls[i,j] & 8 == 0):
-						print('2')
+						#print('2')
 						a[i-1,j] = n+1
-						print(a)
+						#print(a)
 
 				if(j+1)< grid:
 					#check east
-					print('no')
+					#print('no')
 					if a[i,j+1] != 1 and a[i,j+1] == 0 and (walls[i,j] & 4 == 0):
-						print('3')
+						#print('3')
 						a[i,j+1] = n+1
-						print(a)
+						#print(a)
 
 				if (j-1)>-1:
 					#check weset
 					if a[i,j-1] != 1 and a[i,j-1] == 0 and (walls[i,j] & 1 == 0):
-						print('4')
+						#print('4')
 						a[i,j-1] = n+1
-						print(a)
+						#print(a)
 
 
 	n+=1
