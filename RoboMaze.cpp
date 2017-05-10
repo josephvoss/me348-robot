@@ -4,7 +4,6 @@
 #include "adcDCpropab.h"
 #include "abdrive.h"
 
-
 static volatile int stopStep,sonarAngle,sonarDis,sonarData[6],direction,move,check,x,y;
 unsigned int stack[50];
 
@@ -13,6 +12,14 @@ int walls[6][6];
 int goal[2] = {2,2};
 
 void modFF(int** ff, int* goal, int** walls)
+/*
+ * Modified flood fill. Used to solve directions of the matrix
+ *
+ * Inputs:
+ *      2D array of flood fill values
+ *      1D array of goal target location
+ *      2D array of walls, in binary notation
+ */
 {
 
 
@@ -80,6 +87,12 @@ void modFF(int** ff, int* goal, int** walls)
 }
 
 void checkSignal()
+/*
+ * Check Signal. No idea.
+ *
+ * Inputs:
+ *      None?
+ */
 {
   int irLeft,irRight,sonarDis;
     //wall is 0, nothing is 1
@@ -106,6 +119,13 @@ void checkSignal()
 }                          
 
 void sensorDec()
+/*
+ * Sensor Decision. Makes a turn decision based on sensor readings.
+ * Will be updated to use flood fill techniques
+ *
+ * Inputs:
+ *      None?
+ */
 {
   int irLeft,irRight,sonarDis;
   low(26);
@@ -155,13 +175,26 @@ void sensorDec()
 }    
         
 void stepUp()
+/*
+ * Step Up. Causes robot to take a unit step (90 ticks, 292.5  mm, 11.5 inches) 
+ * in the current direction.
+ *
+ */
 {
+  //Set ramping speed. Prevents overacceleration
   drive_setRampStep(2);
+
+  //Drive 90 ticks in current direction
   drive_goto(90,90);
-  
 }
 
 void turn()
+/*
+ * Turn. Turns robot depending on value of move. N = 0, E = 1, S = 2, W = 3.
+ *
+ * Inputs:
+ *      None?!?
+ */
 {
     switch (move){
       case 1 : //go straight
@@ -187,6 +220,13 @@ void turn()
 }
   
 void selfOrient()
+/*
+ * Re-orient the robot based on the distance between the two walls.
+ *
+ * Can we *please* change these variable names or add comments or something so
+ * someone other than micheal understands what's going on?
+ *
+ */
 {
   int a1,b1,c1,d1,a2,b2,c2,d2,rotateTicks;
   c1 = 100;
@@ -204,8 +244,8 @@ void selfOrient()
        c1 = b1;
      }
    }
-   servo_angle(16,900);
-   pause(1000);   
+  servo_angle(16,900);
+  pause(1000);   
 
            
   for (a2=45;a2>=0;a2-=5)
@@ -219,23 +259,29 @@ void selfOrient()
       c2 = b2;
     }
   }
-    servo_angle(16,900);
-    if (d1 >= d2)
+  servo_angle(16,900);
+  if (d1 >= d2)
   {
     rotateTicks=d1*51/180;
     drive_goto(rotateTicks,-rotateTicks);
     pause(500); 
   
-} 
+  } 
   else if (d1 < d2)
   {
- rotateTicks=d2*51/180-4;
-  drive_goto(-rotateTicks,rotateTicks);
-  pause(500);  
+    rotateTicks=d2*51/180-4;
+    drive_goto(-rotateTicks,rotateTicks);
+    pause(500);  
   }  
 } 
        
 void directionUpdate() //North-0 East-1 South-2 West-3
+/*
+ * Updates the current direction of the robot.
+ *
+ * Outputs:
+ *      None?!?
+ */
 {
     switch (move){
       case 1 : //go straight
@@ -274,6 +320,12 @@ void directionUpdate() //North-0 East-1 South-2 West-3
   }    
   
 void positionUpdate() //(x,y)
+/*
+ * Updates the current position of the robot on a 6x6 cartesian grid
+ *
+ * Outputs:
+ *      None?!?     
+ */
 {
   switch (move){
     case 1:
@@ -334,8 +386,7 @@ void positionUpdate() //(x,y)
   right = ping_cm(3);
 }  */
 
-//main loop
-int main()                                    // Main function
+int main()
 {  
   direction=0;
   x=0;
