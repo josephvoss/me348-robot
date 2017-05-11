@@ -264,52 +264,52 @@ void selfOrient()
  *
  */
 {
-  int a1,b1,c1,d1,a2,b2,c2,d2,rotateTicks;
-  c1 = 100;
-  d1 = 0;
-  c2 = 100;
-  d2 = 0;
-  for (a1=135;a1<=180;a1+=5)
+  int a1=leftPingAngle,leftPing,min_leftPing,leftRotateAngle,rightPingAngle,rightPing,min_rightPing,rightRotateAngle;
+  min_leftPing = 100;
+  leftRotateAngle = 0;
+  min_rightPing = 100;
+  rightRotateAngle = 0;
+  
+  for (leftPingAngle=180 ; leftPingAngle>=90 ; leftPingAngle-=1) //scan the left side wall
   {
-     servo_angle(16,a1*10);
-     pause(100);
-     b1 = ping_cm(17);
-     if (b1 <= c1)
+     servo_angle(16,leftPingAngle*10);
+     pause(20);
+     leftPing = ping_cm(17);
+     if (leftPing < min_leftPing)
      {
-       d1 = 180-a1;
-       c1 = b1;
+       leftRotateAngle = 180-leftPingAngle;//angle to correct
+       min_leftPing = leftPing;//store the minimum Ping sensor data
      }
-   }
-  servo_angle(16,900);
-  pause(1000);   
+     }
+   
+   servo_angle(16,0);
+   pause(1000);   
 
            
-  for (a2=45;a2>=0;a2-=5)
+  for (rightPingAngle=0 ; rightPingAngle<=90 ; rightPingAngle+=1) //scan the left side wall
   {
-    servo_angle(16,a2*10);
-    pause(100);
-    b2 = ping_cm(17);
-    if (b2 <= c2)
+    servo_angle(16,rightPingAngle*10);
+    pause(20);
+    rightPing = ping_cm(17);
+    if (rightPing < min_rightPing)
     {
-      d2 = a2;
-      c2 = b2;
+      rightRotateAngle = rightPingAngle;//angle to correct
+      min_rightPing = rightPing;//store the minimum sensor data
     }
-  }
-  servo_angle(16,900);
-  if (d1 >= d2)
+   }
+  
+  if (leftRotateAngle-rightRotateAngle >= 10) //rotate the robot if difference larger than 10 degree
   {
-    rotateTicks=d1*51/180;
+    rotateTicks=leftRotateAngle*51/180;
     drive_goto(rotateTicks,-rotateTicks);
     pause(500); 
-  
-  } 
-  else if (d1 < d2)
+    } 
+  else if (rightRotateAngle-leftRotateAngle >=10)
   {
-    rotateTicks=d2*51/180-4;
+    rotateTicks=d2*51/180;
     drive_goto(-rotateTicks,rotateTicks);
     pause(500);  
   }  
-} 
        
 int directionUpdate(int move, int currentDirection)
 /*
