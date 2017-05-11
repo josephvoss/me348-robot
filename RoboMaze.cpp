@@ -61,7 +61,7 @@ void stepUp()
  */
 {
   //Set ramping speed. Prevents overacceleration
-  drive_setRampStep(2);
+  drive_setRampStep(1);
 
   //Drive 90 ticks in current direction
   drive_goto(90,90);
@@ -381,7 +381,7 @@ int main()
 
   //Wait until position is set by controller
   
-  while( position[0] == -1 )
+  while( position[1] == -1 )
   {
     wifi_poll(&event, &id, &handle); 
     wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
@@ -416,5 +416,9 @@ int main()
     //Update direction and position
     direction = directionUpdate(move, direction);
     positionUpdate(move,direction, position);
+    
+    for (int i=0; i<6; i++)
+      for (int j=0; j<6; j++)
+        printf("%d\t", wall_arr[i][j]);
   }    
 }
