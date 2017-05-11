@@ -1,8 +1,16 @@
 RoboMaze.cpp
+-I ./libwifi
+-L ./libwifi
+ff_functions.h
+ff_functions.cpp
 >compiler=C++
 >memtype=cmm main ram compact
->optimize=-Os
+>optimize=-O2
 >-m32bit-doubles
 >-fno-exceptions
+>-Dprintf=__simple_printf
+>-enable_pruning
 >-fno-rtti
+>-ltiny
+>linker::-lwifi
 >BOARD::ACTIVITYBOARD
