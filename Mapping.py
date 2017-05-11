@@ -19,13 +19,25 @@ map_matrix = [[13, 9, 8, 8, 8, 12], [1, 2, 4, 3, 0, 4], [1, 8, 2, 12, 1, 4],[1,
 
 map_matrix = np.asarray(map_matrix)
 
-plt.ion()
+link = "http://192.168.4.1/files/map.html"
 
+plt.ion()
 fig = plt.figure()
 ax = plt.axes()
 while True:
 
     #Parse webpage
+    # f = urllib.urlopen(link)
+    f = open("./map_test.html")
+    
+    line_array = []
+    for line in f:
+        x = (line.rstrip('\n')).split('\t')
+        x = filter(None, x)
+        x = map(int, x)
+        line_array.append(np.asarray(x))
+    
+    map_matrix = np.asarray(line_array)
 
     for i, item in enumerate(map_matrix.flat):
         x_bot = i % 6
