@@ -4,10 +4,6 @@
 #include "adcDCpropab.h"
 #include "abdrive.h"
 
-int ff_arr[6][6];
-int walls[6][6];
-int goal[2];;
-
 void ff_funct(int** ff, int* goal, int** walls)
 /*
  * Modified flood fill. Used to solve directions of the matrix
@@ -365,7 +361,7 @@ int directionUpdate(int move, int currentDirection)
   return currentDirection;    
 }    
   
-int* positionUpdate(int move, int direction, int* position) //(x,y)
+void positionUpdate(int move, int direction, int* position) //(x,y)
 /*
  * Updates the current position of the robot on a 6x6 cartesian grid
  *
@@ -375,8 +371,6 @@ int* positionUpdate(int move, int direction, int* position) //(x,y)
  *      Integer pointer. Array with values of x and y. Contains current
  *          position data
  *
- * Outputs:
- *      Integer pointer. Contains new position data
  */
 {
   int x = position[0];
@@ -431,7 +425,7 @@ int* positionUpdate(int move, int direction, int* position) //(x,y)
   position[0] = x;
   position[1] = y;
 
-  return position;
+  return;
 }      
             
 /*void toCenter()
@@ -449,6 +443,10 @@ int main()
 {
 
   //Initialize variables to 0.
+  int ff_arr[6][6];
+  int wall_arr[6][6];
+  int goal[2];
+
   int direction = 0;
   int move = 0;
   int position[2];
@@ -456,9 +454,8 @@ int main()
   position[1] = 0;      //Set intial y to 0
 
   //Set goal
-  goals[0] = 2;
-  goals[1] = 2;
-  //drive_trimSet(0,0,0);
+  goal[0] = 2;
+  goal[1] = 2;
 
   while(1)
   {
@@ -466,11 +463,11 @@ int main()
     selfOrient();
     
     //Sense around robot
-    buildWall(wall_arr, position, direction);
+    buildWall((int**) wall_arr, position, direction);
 
     //Decide where to go 
     ff_funct((int**) ff_arr,goal, (int**) wall_arr);
-    move = ff_follower(pos, goal, (int**) ff_arr);
+    move = ff_follower(position, goal, (int**) ff_arr);
 
     //Turn if needed
     turn(move);    
@@ -480,6 +477,6 @@ int main()
 
     //Update direction and position
     direction = directionUpdate(move, direction);
-    position = positionUpdate(move,direction, position);
+    positionUpdate(move,direction, position);
   }    
 }
