@@ -31,8 +31,8 @@
        var namey = "waypointY";
        var x_val = document.getElementById("waypointX").value;
        var y_val = document.getElementById("waypointY").value;
-       var msgx = namex + "=" + x_val;
-       var msgy = namey + "=" + y_val;
+       var msgx = "set=" + 100 + "to" + x_val;
+       var msgy =  "set=" + 101 + "to" + y_val;
        
        httpPost("/controller_post", msgx);
        httpPost("/controller_post", msgy);
@@ -49,8 +49,8 @@
        var namey = "currentPosY";
        var x_val = document.getElementById("currentPosX").value;
        var y_val = document.getElementById("currentPosY").value;
-       var msgx = namex + "=" + x_val;
-       var msgy = namey + "=" + y_val;
+       var msgx = "set=" + 200 + "to" + x_val;
+       var msgy = "set=" + 201 + "to" + y_val;
        
        httpPost("/controller_post", msgx);
        httpPost("/controller_post", msgy);

@@ -27,31 +27,13 @@ int main()
         wifi_scan(POST, handle, "set%d%d", &identifier, &value);
         printf("%d\t%d\n", identifier, value);
 
-        int intPos = strlen(fullString)-1;
-        char stringInt = fullString[intPos];
-        if (strstr(fullString, "waypointX") != NULL)
-        {
-          waypointX = stringInt - 48;
-          printf("WayX\n");
-        }          
+        if (identifier == 100) waypointX = value;
         
-        else if (strstr(fullString, "waypointY") != NULL)
-        {
-          waypointY = stringInt - 48;
-          printf("WayY\n");
-        }          
+        else if (identifier == 101) waypointY = value; 
         
-        else if (strstr(fullString, "currentPosX") != NULL)
-        {
-          currentPosX = stringInt - 48;
-          printf("posX\n");
-        }                
+        else if (identifier == 200) currentPosX = value;          
   
-        else if (strstr(fullString, "currentPosY") != NULL)
-        {
-          currentPosY = stringInt - 48;
-          printf("posY\n");          
-        }
+        else if (identifier == 201) currentPosY = value;
         
         printf("waypointX = %d\n", waypointX);
         printf("waypointY = %d\n", waypointY);
