@@ -1,6 +1,7 @@
 import urllib
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 map_matrix = np.ones([6,6]) * 255
 
@@ -58,4 +59,7 @@ while True:
         ax.plot()
 
     plt.pause(1)
+    print time.time()
+    time.sleep(1)
+    
     
