@@ -1,0 +1,15 @@
+Wifi_test.c
+-I ./../parallax-esp-2016-11-02-1804-e/Examples/Propeller C/libwifi
+-L ./../parallax-esp-2016-11-02-1804-e/Examples/Propeller C/libwifi
+-I ./../Learn/Simple Libraries/TextDevices/libfdserial
+-L ./../Learn/Simple Libraries/TextDevices/libfdserial
+>compiler=C
+>memtype=cmm main ram compact
+>optimize=-Os
+>-m32bit-doubles
+>-fno-exceptions
+>defs::-std=c99
+>-lm
+>-create_library
+>linker::-lwifi -lfdserial
+>BOARD::ACTIVITYBOARD
