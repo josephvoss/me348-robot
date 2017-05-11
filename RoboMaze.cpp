@@ -1,8 +1,10 @@
 #include "simpletools.h"                      // Include simple tools
 #include "servo.h"
 #include "ping.h"
-#include "adcDCpropab.h"
 #include "abdrive.h"
+#include "wifi.h"
+
+#include "ff_functions.h"
 
 void ff_funct(int** ff, int* goal, int** walls)
 /*
@@ -264,7 +266,7 @@ void selfOrient()
  *
  */
 {
-  int a1=leftPingAngle,leftPing,min_leftPing,leftRotateAngle,rightPingAngle,rightPing,min_rightPing,rightRotateAngle;
+  int leftPingAngle,leftPing,min_leftPing,leftRotateAngle,rightPingAngle,rightPing,min_rightPing,rightRotateAngle;
   min_leftPing = 100;
   leftRotateAngle = 0;
   min_rightPing = 100;
@@ -300,16 +302,17 @@ void selfOrient()
   
   if (leftRotateAngle-rightRotateAngle >= 10) //rotate the robot if difference larger than 10 degree
   {
-    rotateTicks=leftRotateAngle*51/180;
+    int rotateTicks=leftRotateAngle*51/180;
     drive_goto(rotateTicks,-rotateTicks);
     pause(500); 
     } 
   else if (rightRotateAngle-leftRotateAngle >=10)
   {
-    rotateTicks=d2*51/180;
+    int rotateTicks=rightRotateAngle*51/180;
     drive_goto(-rotateTicks,rotateTicks);
     pause(500);  
   }  
+}
        
 int directionUpdate(int move, int currentDirection)
 /*
@@ -447,18 +450,77 @@ void adjustPosition() //move backward a little bit to avoid collision
   {drive_goto(-1,-1);
   }
 }  
+
+void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int* goal, int* position, int** walls)
+/*
+ * Check wifi receiver for updates
+ * 
+ * Inputs
+ * 
+ * 
+ */
+{
+    //If post and for controller
+    if(event == 'P' && id == postFromPageId)
+    {
+        int identifier, value;
+        
+        //Get identifier and the value for it
+        wifi_scan(POST, handle, "set%d%d", &identifier, &value);
+
+        //decode identifier and set to right variable    
+        if (identifier == 100) goal[0] = value;        
+        else if (identifier == 101) goal[1] = value;         
+        else if (identifier == 200) position[0] = value;            
+        else if (identifier == 201) position[1] = value;      
+    }
+    //If get and from map
+    if(event == 'G' && id == getFromPageId)
+    {
+        //Buffer
+        char wall_string[150];
+        int i, j;
+        
+        //Create string showing the walls
+        for (int x=0; x<36; x++)
+        {
+          i = x / 6;
+          j = x % 6;
+          sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
+          if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
+        }          
+        //Trying to rescue last integer
+        //For w/e reason, last number is always dropped off
+        sprintf(wall_string+strlen(wall_string),"1\t");
+
+        //Print the walls
+        wifi_print(GET, handle, "%s\n", wall_string);
+        for(int x=0; x<strlen(wall_string); x++) wall_string[x] = NULL;
+    }      
+}  
   
 int main()
 {
-
   //Initialize variables to 0.
   int ff_arr[6][6];
   int wall_arr[6][6];
   int goal[2];
-
   int direction = 0;
   int move = 0;
   int position[2];
+  
+  //Init wifi hardware
+  wifi_start(9, 8, 115200, USB_PGM_TERM);
+  int event, id, handle;
+  
+  //Start watcher for controller post
+  int postFromPageId = wifi_listen(HTTP, "/controller_post");
+  printf("postFromPageId = %d\n", postFromPageId);
+
+  //Start watcher for map get
+  int getFromPageId = wifi_listen(HTTP, "/map.html");
+  printf("getFromPageId = %d\n", getFromPageId);  
+
   position[0] = 0;      //Set intial x to 0
   position[1] = 0;      //Set intial y to 0
 
@@ -466,13 +528,25 @@ int main()
   goal[0] = 2;
   goal[1] = 2;
 
-  while(1)
+  //Wait until position is set by controller
+  /*
+  while( position[0] == -1 )
   {
+    wifi_poll(&event, &id, &handle); 
+    wifiCheck(event, id, goal, position, (int**) wall_arr);    
+  }    */
+
+  while(1)
+  {    
     //Straighten self within the grid
     selfOrient();
     
     //Sense around robot
     buildWall((int**) wall_arr, position, direction);
+    
+    //Poll wifi module
+    wifi_poll(&event, &id, &handle); 
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, (int**) wall_arr);
 
     //Decide where to go 
     ff_funct((int**) ff_arr,goal, (int**) wall_arr);
