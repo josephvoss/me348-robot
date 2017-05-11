@@ -294,10 +294,17 @@ void adjustPosition() //move backward a little bit to avoid collision
 
 void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int* goal, int* position, int walls[][6])
 /*
- * Check wifi receiver for updates
+ * Check wifi receiver for updates.
  * 
  * Inputs
- * 
+ *     Integer event, output from wifi_start
+ *     Integer id, output from wifi_start
+ *     Integer handle, output from wifi_start
+ *     Integer id for post controller
+ *     Integer id for wall data getter
+ *     Integer array for position data
+ *     Integer array for goal position
+ *     Integer array for wall data
  * 
  */
 {
