@@ -294,7 +294,8 @@ void adjustPosition() //move backward a little bit to avoid collision
 
 void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int* goal, int* position, int walls[][6])
 /*
- * Check wifi receiver for updates.
+ * Check wifi receiver for updates. Blocking, waits to receive a get
+ * request before continuing.
  * 
  * Inputs
  *     Integer event, output from wifi_start
@@ -308,9 +309,14 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
  * 
  */
 {
-    //If post and for controller
-    if(event == 'P' && id == postFromPageId)
+    int getFlag = 0;
+    while(getFlag != 1)
     {
+      wifi_poll(&event, &id, &handle); 
+      printf("event = %c, id = %d, handle = %d\r", event, id, handle);
+      //If post and for controller
+      if(event == 'P' && id == postFromPageId)
+      {
         int identifier, value;
         
         //Get identifier and the value for it
@@ -323,10 +329,10 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
         else if (identifier == 101) goal[1] = value;         
         else if (identifier == 200) position[0] = value;            
         else if (identifier == 201) position[1] = value;      
-    }
-    //If get and from map
-    if(event == 'G' && id == getFromPageId)
-    {
+      }
+      //If get and from map
+      if(event == 'G' && id == getFromPageId)
+      {
         //Buffer
         char wall_string[150];
         int i, j;
@@ -347,7 +353,12 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
         wifi_print(GET, handle, "%s\n", wall_string);
         printf("%s", wall_string);
         for(int x=0; x<strlen(wall_string); x++) wall_string[x] = NULL;
-    }      
+        
+        //Exit loop
+        getFlag = 1;
+      }
+      pause(100); 
+    }            
 }  
   
 int main()
@@ -404,11 +415,7 @@ int main()
     buildWall(wall_arr, position, direction);
     
     //Poll wifi module
-    for (int i = 0; i<5; i++)
-    {
-      wifi_poll(&event, &id, &handle); 
-      wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
-    }    
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
 
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
