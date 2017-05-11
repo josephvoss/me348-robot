@@ -58,6 +58,9 @@ while True:
         
         ax.plot()
 
+    ax.set_ylim([-5,0])
+    ax.set_xlim([0,5])
+
     plt.pause(1)
     print time.time()
     time.sleep(1)

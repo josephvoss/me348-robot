@@ -6,7 +6,7 @@
 
 #include "ff_functions.h"
 
-void buildWall(int wall_arr[][6], int* pos, int direction)
+void buildWall(int wall_arr[][6], int pos[], int direction)
 /*
  * Build wall array for current position
  *
@@ -29,27 +29,34 @@ void buildWall(int wall_arr[][6], int* pos, int direction)
   sonarDis = ping_cm(17);    
   
   //Set wall value to a known value since the robot is here
-  wall_arr[x][y] = 0;
+  wall_arr[y][x] = 0;
 
   //Orient straight, left, and right in terms of the cardinal directions
   int s_dir = direction;
-  int l_dir;
-  if ((direction - 1) < 0) l_dir = (direction - 1 + 4) % 4;
+  int l_dir = 0;
+  if ((direction - 1) < 0) l_dir = (direction - 1) % 4 + 4;
   else l_dir = (direction - 1) % 4;
   int r_dir = (direction + 1) % 4;
+
+  printf("%d\t%d\t%d\n",l_dir,s_dir,r_dir);
+  printf("%d\t%d\t%d\n",irLeft,sonarDis,irRight);
   
+  int sum = 0;
   //If walls exist add to array
-  if (sonarDis > 5) //forward
+  if (sonarDis < 5) //wall forward
   {
-    wall_arr[x][y] += pow(2,3-s_dir);
+//    for (int i=0; i<3-s_dir; i++)
+//      sum = sum*2;
+      
+    wall_arr[y][x] += (int) pow(2,(int)3-s_dir);
   }
-  if (irLeft == 1) //turn left
+  if (irLeft == 1) //wall left
   {
-    wall_arr[x][y] += pow(2,3-l_dir);
+    wall_arr[y][x] += (int) pow(2,(int)3-l_dir);
   }
-  if (irRight == 1) //turn right
+  if (irRight == 1) //wall right
   {
-    wall_arr[x][y] += pow(2,3-r_dir);
+    wall_arr[y][x] += (int) pow(2,(int)3-r_dir);
   }                                    
 }    
 
@@ -205,7 +212,7 @@ int directionUpdate(int move, int currentDirection)
   return currentDirection;    
 }    
   
-void positionUpdate(int move, int direction, int* position) //(x,y)
+void positionUpdate(int move, int direction, int position[]) //(x,y)
 /*
  * Updates the current position of the robot on a 6x6 cartesian grid
  *
@@ -292,7 +299,7 @@ void adjustPosition() //move backward a little bit to avoid collision
   }
 }  
 
-void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int* goal, int* position, int walls[][6])
+void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6])
 /*
  * Check wifi receiver for updates. Blocking, waits to receive a get
  * request before continuing.
@@ -313,7 +320,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
     while(getFlag != 1)
     {
       wifi_poll(&event, &id, &handle); 
-      printf("event = %c, id = %d, handle = %d\r", event, id, handle);
+//      printf("event = %c, id = %d, handle = %d\r", event, id, handle);
       //If post and for controller
       if(event == 'P' && id == postFromPageId)
       {
@@ -351,13 +358,15 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
 
         //Print the walls
         wifi_print(GET, handle, "%s\n", wall_string);
-        printf("%s", wall_string);
+        printf("%s\n", wall_string);
         for(int x=0; x<strlen(wall_string); x++) wall_string[x] = NULL;
         
         //Exit loop
         getFlag = 1;
+        printf("Set getFlag\n");
       }
-      pause(100); 
+      printf("getFlag=%d\n", getFlag);      
+      pause(500); 
     }            
 }  
   
@@ -401,15 +410,13 @@ int main()
   
   while( position[1] == -1 )
   {
-    wifi_poll(&event, &id, &handle); 
     wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
-    pause(500);
   }
 
   while(1)
   {    
     //Straighten self within the grid
-    selfOrient();
+//    selfOrient();
     
     //Sense around robot
     buildWall(wall_arr, position, direction);
@@ -420,22 +427,28 @@ int main()
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
     move = ff_follower(position, goal, ff_arr);
+    printf("\n");
+    for (int i=0; i<6; i++)
+    {
+      for(int j=0; j<6; j++)
+      {
+        printf("%d\t", ff_arr[i][j]);
+      }
+      printf("\n");
+    }      
 
     //Turn if needed
-    turn(move);    
+//    turn(move);    
     
     //Move forward 1 unit
-    stepUp();
+//    stepUp();
 
     //Adjust position
-    adjustPosition();
+//    adjustPosition();
     
     //Update direction and position
     direction = directionUpdate(move, direction);
-    positionUpdate(move,direction, position);
+//    positionUpdate(move,direction, position);
     
-    for (int i=0; i<6; i++)
-      for (int j=0; j<6; j++)
-        printf("%d\t", wall_arr[i][j]);
   }    
 }
