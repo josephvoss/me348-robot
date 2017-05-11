@@ -19,7 +19,7 @@ map_matrix = [[13, 9, 8, 8, 8, 12], [1, 2, 4, 3, 0, 4], [1, 8, 2, 12, 1, 4],[1,
 
 map_matrix = np.asarray(map_matrix)
 
-link = "http://192.168.4.1/files/map.html"
+link = "http://192.168.4.1/map.html"
 
 plt.ion()
 fig = plt.figure()
@@ -27,12 +27,12 @@ ax = plt.axes()
 while True:
 
     #Parse webpage
-    # f = urllib.urlopen(link)
-    f = open("./map_test.html")
+    f = urllib.urlopen(link)
+#    f = open("./map_test.html")
     
     line_array = []
     for line in f:
-        x = (line.rstrip('\n')).split('\t')
+        x = ((line.rstrip('\n')).rstrip('\r')).split('\t')
         x = filter(None, x)
         x = map(int, x)
         line_array.append(np.asarray(x))
@@ -46,13 +46,13 @@ while True:
         y_top = y_bot-1
         print x_bot, y_bot
 
-        if item & 2 > 0:
+        if item & 2 > 0 and item != 255:
             ax.add_line(plt.Line2D([x_bot, x_top], [y_top, y_top]))
-        if item & 8 > 0:
+        if item & 8 > 0 and item != 255:
             ax.add_line(plt.Line2D([x_bot, x_top], [y_bot, y_bot]))
-        if item & 4 > 0:
+        if item & 4 > 0 and item != 255:
             ax.add_line(plt.Line2D([x_top, x_top], [y_bot, y_top]))
-        if item & 1 > 0:
+        if item & 1 > 0 and item != 255:
             ax.add_line(plt.Line2D([x_bot, x_bot], [y_bot, y_top]))
         
         ax.plot()
