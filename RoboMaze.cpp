@@ -397,8 +397,11 @@ int main()
     buildWall(wall_arr, position, direction);
     
     //Poll wifi module
-    wifi_poll(&event, &id, &handle); 
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    for (int i = 0; i<5; i++)
+    {
+      wifi_poll(&event, &id, &handle); 
+      wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    }    
 
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
