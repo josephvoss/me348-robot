@@ -439,6 +439,15 @@ void positionUpdate(int move, int direction, int* position) //(x,y)
   right = ping_cm(3);
 }  */
 
+void adjustPosition() //move backward a little bit to avoid collision
+{
+  int frontDis;
+  frontDis=ping_cm(17);
+  while (frontDis < 3) //assume 3cm. need to test
+  {drive_goto(-1,-1);
+  }
+}  
+  
 int main()
 {
 
@@ -475,6 +484,9 @@ int main()
     //Move forward 1 unit
     stepUp();
 
+    //Adjust position
+    adjustPosition();
+    
     //Update direction and position
     direction = directionUpdate(move, direction);
     positionUpdate(move,direction, position);
