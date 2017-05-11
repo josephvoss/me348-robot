@@ -4,9 +4,6 @@
 #include "adcDCpropab.h"
 #include "abdrive.h"
 
-static volatile int stopStep,sonarAngle,sonarDis,sonarData[6],direction,move,x,y;
-unsigned int stack[50];
-
 int ff_arr[6][6];
 int walls[6][6];
 int goal[2] = {2,2};
@@ -156,12 +153,12 @@ void stepUp()
   drive_goto(90,90);
 }
 
-void turn()
+void turn(int move)
 /*
- * Turn. Turns robot depending on value of move. N = 0, E = 1, S = 2, W = 3.
+ * Turn. Turns robot depending on value of move.
  *
  * Inputs:
- *      None?!?
+ *      Integer move. Range 0-3. For each case see structure below
  */
 {
     switch (move){
@@ -243,12 +240,16 @@ void selfOrient()
   }  
 } 
        
-void directionUpdate() //North-0 East-1 South-2 West-3
+int directionUpdate(int move, int currentDirection)
 /*
  * Updates the current direction of the robot.
  *
+ * Inputs:
+ *      Integer move. Range 0-3. For each case see structure below.
+ *      Integer current direction. Range 0-3, values are North-0 East-1 South-2 West-3
+ *
  * Outputs:
- *      None?!?
+ *      Integer with new value of direction
  */
 {
     switch (move){
@@ -256,45 +257,55 @@ void directionUpdate() //North-0 East-1 South-2 West-3
       break;
       
       case 2: //turn left
-      if (direction == 0)
+      if (currentDirection == 0)
       {
-        direction = 3;
+        currentDirection = 3;
       }
       else {
-        direction-=1;     
+        currentDirection-=1;     
       }           
       break;
       
       case 3: //turn right
-      if (direction == 3)
+      if (currentDirection == 3)
       {
-        direction = 0;
+        currentDirection = 0;
       }
       else {
-        direction+=1;     
+        currentDirection+=1;     
       }   
       break;
       
       case 4: //turn around
-      if (direction==0 || direction==1)
+      if (currentDirection==0 || currentDirection==1)
       {
-        direction+=2;
+        currentDirection+=2;
       }
       else {
-        direction-=2;
+        currentDirection-=2;
       }                
       break;
-    }      
+    }
+
+    return currentDirection;    
   }    
   
-void positionUpdate() //(x,y)
+int* positionUpdate(int move, int direction, int* position) //(x,y)
 /*
  * Updates the current position of the robot on a 6x6 cartesian grid
  *
+ * Inputs
+ *      Integer move. Range 0-3. Contains value to turn to
+ *      Integer direction. Range 0-3, values are North-0 East-1 South-2 West-3
+ *      Integer pointer. Array with values of x and y. Contains current
+ *          position data
+ *
  * Outputs:
- *      None?!?     
+ *      Integer pointer. Contains new position data
  */
 {
+  int x = position[0];
+  int y = position[1];
   switch (move){
     case 1:
     switch (direction){
@@ -341,6 +352,11 @@ void positionUpdate() //(x,y)
       x+=1;break;
     }  
   }
+
+  position[0] = x;
+  position[1] = y;
+
+  return position;
 }      
             
 /*void toCenter()
@@ -355,18 +371,23 @@ void positionUpdate() //(x,y)
 }  */
 
 int main()
-{  
-  direction=0;
-  x=0;
-  y=0;
+{
+
+  //Initialize variables to 0.
+  int direction = 0;
+  int move = 0;
+  int position[2];
+  position[0] = 0;      //Set intial x to 0
+  position[1] = 0;      //Set intial y to 0
   //drive_trimSet(0,0,0);
+
   while(1)
   {
     selfOrient();
     stepUp();  
-    sensorDec();
-    turn();    
-    positionUpdate();
-    directionUpdate();
+    move = sensorDec();
+    turn(move);    
+    direction = directionUpdate(move, direction);
+    position = positionUpdate(move,direction, position);
   }    
 }
