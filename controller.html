@@ -1,0 +1,72 @@
+<html>
+
+    <b>Robot Controller</b><br>
+    MAKE SURE BAUD RATE IS SET TO 115200 FOR <b>ALL</b> rates in wifi module
+    <br>
+    To run:
+    Set current position of bot and target waypoint, then hit "Run".
+    <br>
+    To update waypoint:
+    Set current position waypoint, then hit "Update Waypoint".
+    <br><br>
+
+  <p>Current Position</p>
+  <p>X</p><input type="text" id="currentPosX" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  <p>Y</p><input type="text" id="currentPosY" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  <br><br> 
+  <p>Waypoint</p>
+  <p>X</p><input type="text" id="waypointX" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  <p>Y</p><input type="text" id="waypointY" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  <br><br>
+  <button onclick = "updateWaypoint()">Update Waypoint</button>
+  <br>
+  <button onclick = "setRun()">Run</button>
+  
+  <p id = "myText">Waiting...</p>
+  
+  <script>
+    function updateWaypoint()
+    {
+       var namex = "waypointX";
+       var namey = "waypointY";
+       var x_val = document.getElementById("waypointX").value;
+       var y_val = document.getElementById("waypointY").value;
+       var msgx = namex + "=" + x_val;
+       var msgy = namey + "=" + y_val;
+       
+       httpPost("/controller_post", msgx);
+       httpPost("/controller_post", msgy);
+       
+       document.getElementById("myText").innerHTML = 
+       "Updated Waypoint";
+    }
+  
+  
+    function setRun()
+    {
+       updateWaypoint();
+       var namex = "currentPosX";
+       var namey = "currentPosY";
+       var x_val = document.getElementById("currentPosX").value;
+       var y_val = document.getElementById("currentPosY").value;
+       var msgx = namex + "=" + x_val;
+       var msgy = namey + "=" + y_val;
+       
+       httpPost("/controller_post", msgx);
+       httpPost("/controller_post", msgy);
+       document.getElementById("myText").innerHTML = 
+       "Running";
+    }
+
+    function httpPost(path, param)
+    {
+      var req = new XMLHttpRequest();
+      req.open("POST", path, true);
+      req.setRequestHeader("Content-type",
+      "application/x-www-form-urlencoded");
+      req.send(param);
+    }
+  </script>
+</html>
+
+
