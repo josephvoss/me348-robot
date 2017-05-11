@@ -1,29 +1,20 @@
 <html>
-
-    <b>Robot Controller</b><br>
-    MAKE SURE BAUD RATE IS SET TO 115200 FOR <b>ALL</b> rates in wifi module
-    <br>
-    To run:
-    Set current position of bot and target waypoint, then hit "Run".
-    <br>
-    To update waypoint:
-    Set current position waypoint, then hit "Update Waypoint".
-    <br><br>
-
-  <p>Current Position</p>
-  <p>X</p><input type="text" id="currentPosX" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
-  <p>Y</p><input type="text" id="currentPosY" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
-  <br><br> 
-  <p>Waypoint</p>
-  <p>X</p><input type="text" id="waypointX" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
-  <p>Y</p><input type="text" id="waypointY" maxlength="1" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
-  <br><br>
+<center>
+  <b>Robot Controller</b><br><br>
+  <p>Current Position
+  <br>X<input type="text" id="currentPosX" maxlength="1" style="text-align:right" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  <br>Y<input type="text" id="currentPosY" maxlength="1" style="text-align:right" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  </p> 
+  <p>Waypoint
+  <br>X<input type="text" id="waypointX" maxlength="1" style="text-align:right" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  <br>Y<input type="text" id="waypointY" maxlength="1" style="text-align:right" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+  </p>
   <button onclick = "updateWaypoint()">Update Waypoint</button>
   <br>
   <button onclick = "setRun()">Run</button>
   
   <p id = "myText">Waiting...</p>
-  
+ </center> 
   <script>
     function updateWaypoint()
     {
