@@ -6,9 +6,9 @@
 
 int ff_arr[6][6];
 int walls[6][6];
-int goal[2] = {2,2};
+int goal[2];;
 
-void modFF(int** ff, int* goal, int** walls)
+void ff_funct(int** ff, int* goal, int** walls)
 /*
  * Modified flood fill. Used to solve directions of the matrix
  *
@@ -18,17 +18,6 @@ void modFF(int** ff, int* goal, int** walls)
  *      2D array of walls, in binary notation
  */
 {
-
-
-  //initialize ff matrix
-  for(int i=0;i<6;i++)
-  {
-    for (int j=0;j<6;j++)
-    {
-      ff[i][j] = 0;
-    }
-  }
-
   int n = 1;    //ff maze goal
   ff[goal[0]][goal[1]] = n; //setting location of goal
 
@@ -73,72 +62,158 @@ void modFF(int** ff, int* goal, int** walls)
             }
           }
         }
-
-
       }
     }
-
     n++;
   }
     return;
 }
 
-void sensorDec()
+int ff_follower(int* pos, int* goal, int** ff_arr)
 /*
- * Sensor Decision. Makes a turn decision based on sensor readings.
- * Will be updated to use flood fill techniques
- *
+ * Flood Fill Follower? - Takes a filled ff array and returns a position it needs
+ * to go
+ * 
  * Inputs:
- *      None?
+ *      1D array of current location
+ *      1D array of goal target location
+ *      2D array of flood fill values
+ *
+ * Outputs:
+ *      Integer direction to turn
  */
 {
-  int irLeft,irRight,sonarDis;
-  low(26);
-  low(27);
   
-    freqout(11, 1, 38000);                      
-    irLeft = input(10);                   
-    freqout(1, 1, 38000);                       
-    irRight = input(2);
-    sonarDis = ping_cm(17);    
-    
-    // Decision based on sensor data
-    if (sonarDis > 20 && irLeft == 0 && irRight == 0) //forward
-    {
-      move = 1;
-    }
-    else if (sonarDis <= 20 && irLeft == 1 && irRight == 0) //turn left
-    {
-      move = 2;
-    }
-    else if (sonarDis <= 20 && irLeft == 0 && irRight == 1) //turn right
-    {
-      move=3;
-    }
-    else if (sonarDis > 20 && irLeft == 1 && irRight == 0) //forward or left
-    {
-      move=rand()%2+1;
-    }
-    else if (sonarDis > 20 && irLeft == 0 && irRight == 1) //forward or right
-    {
-      int a;
-      a=rand()%2+1;
-      if (a==2)
-      {
-        a=3;
-      }
-      move=a;
-    }
-    else if (sonarDis > 20 && irLeft == 1 && irRight == 1) //left or right
-    {
-      move=rand()%2+1;
-    }         
-    else if (sonarDis <= 20 && irLeft == 0 && irRight == 0) //turn around
-    {
-      move=4;
-    }                                     
+  int x = pos[0];
+  int y = pos[1];
+  int ff_value[4];
+  int lowest = 12;	//corresponds to "n"
+  int dir= 256; //out of the way value
+  int dir_arr[50];
+  
+  for (int i=0;i<50;i++)
+  {
+    dir_arr[i] = 256; 	//set to high value
+  }
+  
+  for (int i=0;i<4;i++)
+  {
+  	ff_value[i] = 256;	//ff_value initialized to high number
+  }
+  
+  //populates ff_value 
+  if (y+1 < 6) 		//CHECK SOUTH
+  {
+  	ff_value[2] = ff_arr[x][y+1];
+  }
+  
+  if (y-1 > -1) 		//CHECK NORTH
+  {
+  	ff_value[0] = ff_arr[x][y-1];
+  }
+  
+  if (x+1<6) 		//CHECK EAST
+  {
+  	ff_value[1] = ff_arr[x+1][y];
+  }
+  
+  if (x-1 > -1) 		//CHECK WEST
+  {
+  	ff_value[3] = ff_arr[x-1][y];
+  }
+  
+  
+  //finds lowest value which is the next direction
+    //if there are ties, default N,E,S,W tiebreakers
+  for (int i=0;i<4;i++)
+  {
+  	if (ff_value[i] < lowest)
+  	{
+  	  lowest = ff_value[i];
+  	  dir= i;	//this tells you where to move
+  	}
+  }
+  
+  lowest = 256;
+  
+  //tells robot which ff_value to move
+  switch(dir)
+  {
+  	case 0: //north
+  	{
+      y--;
+      break;
+  	}
+  
+  	case 1: //east
+  	{
+      x++;
+  	  break;
+  	}
+  
+  	case 2: //south
+  	{
+      y++;
+  	  break;
+  	}	
+  	case 3: //west
+  	{
+  	  x--;
+      break;
+  	}	
+  }
+  pos[0] = x;
+  pos[1] = y;
+  return dir;
+}
+
+void buildWall(int** wall_arr, int* pos, int direction)
+/*
+ * Build wall array for current position
+ *
+ * Inputs:
+ *      2D array of walls in binary notation
+ *      1D array of current location
+ *      Integer of current direction
+ */
+{
+  // N E S W - 8 4 2 1 -  0 1 2 3 
+  int irLeft,irRight,sonarDis;
+  int x = pos[0];
+  int y = pos[1];
+
+  //Read from ir sensors and ping sensor
+  freqout(11, 1, 38000);                      
+  irLeft = input(10);                   
+  freqout(1, 1, 38000);                       
+  irRight = input(2);
+  sonarDis = ping_cm(17);    
+  
+  //Set wall value to a known value since the robot is here
+  wall_arr[x][y] = 0;
+
+  //Orient straight, left, and right in terms of the cardinal directions
+  int s_dir = direction;
+  int l_dir;
+  if ((direction - 1) < 0) l_dir = (direction - 1 + 4) % 4;
+  else l_dir = (direction - 1) % 4;
+  int r_dir = (direction + 1) % 4;
+  
+  //If walls exist add to array
+  if (sonarDis > 5) //forward
+  {
+    wall_arr[x][y] += pow(2,3-s_dir);
+  }
+  if (irLeft == 1) //turn left
+  {
+    wall_arr[x][y] += pow(2,3-l_dir);
+  }
+  if (irRight == 1) //turn right
+  {
+    wall_arr[x][y] += pow(2,3-r_dir);
+  }                                    
 }    
-        
+
 void stepUp()
 /*
  * Step Up. Causes robot to take a unit step (90 ticks, 292.5  mm, 11.5 inches) 
@@ -161,27 +236,27 @@ void turn(int move)
  *      Integer move. Range 0-3. For each case see structure below
  */
 {
-    switch (move){
-      case 1 : //go straight
-      drive_goto(10,10);
-      pause(200);
-      break;
-      
-      case 2: //turn left
-      drive_goto(-26,25);
-      pause(200);
-      break;
-      
-      case 3: //turn right
-      drive_goto(26,-25);
-      pause(200);
-      break;
-      
-      case 4: //turn around
-      drive_goto(51,-51);
-      pause(200);
-      break;
-    }      
+  switch (move){
+    case 1 : //go straight
+    drive_goto(10,10);
+    pause(200);
+    break;
+    
+    case 2: //turn left
+    drive_goto(-26,25);
+    pause(200);
+    break;
+    
+    case 3: //turn right
+    drive_goto(26,-25);
+    pause(200);
+    break;
+    
+    case 4: //turn around
+    drive_goto(51,-51);
+    pause(200);
+    break;
+  }      
 }
   
 void selfOrient()
@@ -252,43 +327,43 @@ int directionUpdate(int move, int currentDirection)
  *      Integer with new value of direction
  */
 {
-    switch (move){
-      case 1 : //go straight
-      break;
-      
-      case 2: //turn left
-      if (currentDirection == 0)
-      {
-        currentDirection = 3;
-      }
-      else {
-        currentDirection-=1;     
-      }           
-      break;
-      
-      case 3: //turn right
-      if (currentDirection == 3)
-      {
-        currentDirection = 0;
-      }
-      else {
-        currentDirection+=1;     
-      }   
-      break;
-      
-      case 4: //turn around
-      if (currentDirection==0 || currentDirection==1)
-      {
-        currentDirection+=2;
-      }
-      else {
-        currentDirection-=2;
-      }                
-      break;
+  switch (move){
+    case 1 : //go straight
+    break;
+    
+    case 2: //turn left
+    if (currentDirection == 0)
+    {
+      currentDirection = 3;
     }
+    else {
+      currentDirection-=1;     
+    }           
+    break;
+    
+    case 3: //turn right
+    if (currentDirection == 3)
+    {
+      currentDirection = 0;
+    }
+    else {
+      currentDirection+=1;     
+    }   
+    break;
+    
+    case 4: //turn around
+    if (currentDirection==0 || currentDirection==1)
+    {
+      currentDirection+=2;
+    }
+    else {
+      currentDirection-=2;
+    }                
+    break;
+  }
 
-    return currentDirection;    
-  }    
+  return currentDirection;    
+}    
   
 int* positionUpdate(int move, int direction, int* position) //(x,y)
 /*
@@ -379,14 +454,31 @@ int main()
   int position[2];
   position[0] = 0;      //Set intial x to 0
   position[1] = 0;      //Set intial y to 0
+
+  //Set goal
+  goals[0] = 2;
+  goals[1] = 2;
   //drive_trimSet(0,0,0);
 
   while(1)
   {
+    //Straighten self within the grid
     selfOrient();
-    stepUp();  
-    move = sensorDec();
+    
+    //Sense around robot
+    buildWall(wall_arr, position, direction);
+
+    //Decide where to go 
+    ff_funct((int**) ff_arr,goal, (int**) wall_arr);
+    move = ff_follower(pos, goal, (int**) ff_arr);
+
+    //Turn if needed
     turn(move);    
+    
+    //Move forward 1 unit
+    stepUp();
+
+    //Update direction and position
     direction = directionUpdate(move, direction);
     position = positionUpdate(move,direction, position);
   }    
