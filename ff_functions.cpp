@@ -1,6 +1,6 @@
 #include "ff_functions.h"
 
-void ff_funct(int** ff, int* goal, int** walls)
+void ff_funct(int ff[][6], int* goal, int walls[][6])
 /*
  * Modified flood fill. Used to solve directions of the matrix
  *
@@ -61,7 +61,7 @@ void ff_funct(int** ff, int* goal, int** walls)
     return;
 }
 
-int ff_follower(int* pos, int* goal, int** ff_arr)
+int ff_follower(int* pos, int* goal, int ff_arr[][6])
 /*
  * Flood Fill Follower? - Takes a filled ff array and returns a position it needs
  * to go

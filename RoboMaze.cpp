@@ -6,7 +6,7 @@
 
 #include "ff_functions.h"
 
-void buildWall(int** wall_arr, int* pos, int direction)
+void buildWall(int wall_arr[][6], int* pos, int direction)
 /*
  * Build wall array for current position
  *
@@ -292,7 +292,7 @@ void adjustPosition() //move backward a little bit to avoid collision
   }
 }  
 
-void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int* goal, int* position, int** walls)
+void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int* goal, int* position, int walls[][6])
 /*
  * Check wifi receiver for updates
  * 
@@ -308,6 +308,8 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
         
         //Get identifier and the value for it
         wifi_scan(POST, handle, "set%d%d", &identifier, &value);
+
+        printf("%d\t%d\n", identifier, value);
 
         //decode identifier and set to right variable    
         if (identifier == 100) goal[0] = value;        
@@ -336,6 +338,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
 
         //Print the walls
         wifi_print(GET, handle, "%s\n", wall_string);
+        printf("%s", wall_string);
         for(int x=0; x<strlen(wall_string); x++) wall_string[x] = NULL;
     }      
 }  
@@ -350,6 +353,13 @@ int main()
   int move = 0;
   int position[2];
   
+  for (int i=0; i<6; i++)
+    for (int j=0; j<6; j++)
+    {
+      ff_arr[i][j] = 0;
+      wall_arr[i][j] = 255;
+    }      
+  
   //Init wifi hardware
   wifi_start(9, 8, 115200, USB_PGM_TERM);
   int event, id, handle;
@@ -362,20 +372,21 @@ int main()
   int getFromPageId = wifi_listen(HTTP, "/map.html");
   printf("getFromPageId = %d\n", getFromPageId);  
 
-  position[0] = 0;      //Set intial x to 0
-  position[1] = 0;      //Set intial y to 0
+  position[0] = -1;      //Set intial x to 0
+  position[1] = -1;      //Set intial y to 0
 
   //Set goal
   goal[0] = 2;
   goal[1] = 2;
 
   //Wait until position is set by controller
-  /*
+  
   while( position[0] == -1 )
   {
     wifi_poll(&event, &id, &handle); 
-    wifiCheck(event, id, goal, position, (int**) wall_arr);    
-  }    */
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    pause(500);
+  }
 
   while(1)
   {    
@@ -383,15 +394,15 @@ int main()
     selfOrient();
     
     //Sense around robot
-    buildWall((int**) wall_arr, position, direction);
+    buildWall(wall_arr, position, direction);
     
     //Poll wifi module
     wifi_poll(&event, &id, &handle); 
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, (int**) wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
 
     //Decide where to go 
-    ff_funct((int**) ff_arr,goal, (int**) wall_arr);
-    move = ff_follower(position, goal, (int**) ff_arr);
+    ff_funct(ff_arr, goal, wall_arr);
+    move = ff_follower(position, goal, ff_arr);
 
     //Turn if needed
     turn(move);    
