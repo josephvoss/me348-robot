@@ -17,7 +17,7 @@ void ff_funct(int ff[6][6])
 	  for (int j=0;j<grid;j++)
 	  {
 	    ff[i][j] = 0;
-	    walls[i][j] = 0;
+	    //walls[i][j] = 0;
 	  }
 	}
 

@@ -8,11 +8,11 @@
 
 //int position[2];
 //int ff_arr[6][6];
-//int wall_arr[6][6];
+int wall_arr[6][6];
 //int goal[2];
 //int direction = 0;
 //int move = 0;
-//int wall_arr[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{0,1,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
+//int wall_arr[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
 
 void buildWall(int wall_arr[][6], int pos[], int direction)
 /*
@@ -66,8 +66,6 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
   //If walls exist add to array
   if (sonarFront < 20) //wall forward
   {
-//    for (int i=0; i<3-s_dir; i++)
-//      sum = sum*2;
       
     wall_arr[x][y] += (int) pow(2,(int)3-s_dir);
   }
@@ -78,8 +76,56 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
   if (sonRight < 20) //wall right
   {
     wall_arr[x][y] += (int) pow(2,(int)3-r_dir);
-  }                                    
+  }      
+
+  int cell_update[4];
+
+  for (int i=0;i<6;i++)
+  {
+    for (int j=0;j<6;j++)
+    {
+      for(int m=0;m<4;m++)
+      {
+        cell_update[m] = 0;
+      }        
+      
+      if (wall_arr[i][j] == 0)
+      {
+
+        if (wall_arr[i-1][j] != 0 && i>0)  //north
+        {
+          cell_update[0] = wall_arr[i-1][j] & 2;
+          printf("cell update N %d\n",cell_update[0]);
+        }
+
+        if (wall_arr[i][j+1] != 0 && j!=5)  // east
+        {
+          cell_update[1] = wall_arr[i][j+1] & 1;
+          printf("cell update E %d\n",cell_update[1]);
+        }
+
+       if (wall_arr[i+1][j] != 0 && i!=5)  // south
+       {
+         cell_update[2] = wall_arr[i+1][j] & 8;
+         printf("cell update S %d\n",cell_update[2]);
+       }
+
+       if (wall_arr[i][j-1] != 0 && j>0)  // west
+       {
+         cell_update[3] = wall_arr[i][j-1] & 4;
+         printf("cell update W %d\n",cell_update[3]);
+       }
+
+       wall_arr[i][j] = cell_update[0]*8 + cell_update[1]*4 + cell_update[2]*2 + cell_update[3];
+    
+      }
+
+    }
+  }
+
 }    
+
+
 
 void stepUp()
 /*
@@ -223,8 +269,11 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
     } break;
     case 1: //left    
     switch (direction){
-      case 0:
-      y-=1;break;
+      case 0:{
+      y-=1;
+      printf("yesthisisleft");
+      break;
+    }
       case 1:
       x-=1;break;
       case 2:
@@ -360,7 +409,7 @@ int main()
 {
   //Initialize variables to 0.
   int ff_arr[6][6];
-  int wall_arr[6][6];
+  //int wall_arr[6][6];
   int goal[2];       // [x,y]
   int direction = 0; // [N=0, E=1, S=2, W=3]
   int move = 0;      // [For=0, Left=1, Right=2, 180=3]
@@ -409,15 +458,21 @@ int main()
   // MAIN LOOP
   while(1)
   {    
-    //Straighten self within the grid
-    //selfOrient();
     
     //Sense around robot
     buildWall(wall_arr, position, direction);
-    
+
+    for (int i=0; i<6; i++)
+    {
+      for(int j=0; j<6; j++)
+      {
+        printf("%d\t", wall_arr[i][j]);
+      }
+      printf("\n");
+    }     
     //Poll wifi module
     wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
-
+    
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
     
@@ -463,9 +518,9 @@ int main()
     
     //Update direction and position
     printf("Move is %d\n", move);
-    direction = directionUpdate(move, direction);
+    //direction = directionUpdate(move, direction);
     positionUpdate(move,direction, position);
-   
+    direction = directionUpdate(move, direction);
     printf("Direction is %d\n", direction);
     printf("Position is %d %d\n", position[0],position[1]);
 

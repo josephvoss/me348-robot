@@ -6,23 +6,31 @@ a = np.zeros((grid,grid))
 walls = np.zeros((grid,grid))
 
 walls = np.array([
-	[11,8,10,8,10,12],
-	[9,6,9,2,12,5],
-	[5,13,1,14,3,4],
-	[1,4,5,9,12,5],
-	[5,3,6,5,5,5],
-	[3,10,10,6,3,6]
+	# [11,8,10,8,10,12],
+	# [9,6,9,2,12,5],
+	# [5,13,1,14,3,4],
+	# [1,4,5,9,12,5],
+	# [5,3,6,5,5,5],
+	# [3,10,10,6,3,6]
+
+	[0,0,0,0,0,0],
+	[0,0,0,0,0,0],
+	[0,0,0,0,0,0],
+	[0,0,0,0,0,0],
+	[0,0,0,4,5,4],
+	[0,0,0,4,3,4],
+
 	])
 print('walls')
 print(walls)
 
 
 n = 1			#goal value
-a[2,3] = n 		#setting location of goal	
+a[5,0] = n 		#setting location of goal	
 
 #print(a)
 
-while n < 15:
+while n < 50:
 
 	for i in range(0,grid):
 		for j in range(0,grid):
