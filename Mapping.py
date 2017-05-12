@@ -22,7 +22,6 @@ map_matrix = np.asarray(map_matrix)
 
 link = "http://192.168.4.1/map.html"
 
-plt.ion()
 fig = plt.figure()
 ax = plt.axes()
 while True:
@@ -41,11 +40,12 @@ while True:
     map_matrix = np.asarray(line_array)
 
     for i, item in enumerate(map_matrix.flat):
-        x_bot = i % 6
-        y_bot = -1*(i / 6)
+	x = i % 6
+	y = i / 6
+	x_bot = x - 0.5
+        y_bot = -1*(y - 0.5)
         x_top = x_bot+1
         y_top = y_bot-1
-        print x_bot, y_bot
 
         if item & 2 > 0 and item != 255:
             ax.add_line(plt.Line2D([x_bot, x_top], [y_top, y_top]))
@@ -58,10 +58,10 @@ while True:
         
         ax.plot()
 
-    ax.set_ylim([-5,0])
-    ax.set_xlim([0,5])
+    ax.set_ylim([-6,1])
+    ax.set_xlim([-1,6])
 
-    plt.pause(1)
+    plt.pause(4)
     print time.time()
     time.sleep(1)
     
