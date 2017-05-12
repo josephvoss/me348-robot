@@ -173,7 +173,7 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
  * Updates the current position of the robot on a 6x6 cartesian grid
  *
  * Inputs
- *      Integer move. Range 0-3. Contains value to turn to
+ *      Integer move/turn. Range 0-3. Contains value to turn to
  *      Integer direction. Range 0-3, values are North-0 East-1 South-2 West-3
  *      Integer pointer. Array with values of x and y. Contains current
  *          position data
@@ -186,46 +186,46 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
     case 0:
     switch (direction){
       case 0:
-      y-=1;break;
-      case 1:
-      x+=1;break;
-      case 2:
-      y+=1;break;
-      case 3:
       x-=1;break;
+      case 1:
+      y+=1;break;
+      case 2:
+      x+=1;break;
+      case 3:
+      y-=1;break;
     } break;
     case 1:      
     switch (direction){
       case 0:
-      x-=1;break;
-      case 1:
       y-=1;break;
+      case 1:
+      x-=1;break;
       case 2:
-      x+=1;break;
-      case 3:
       y+=1;break;
+      case 3:
+      x+=1;break;
     } break;
     case 2:
     switch (direction){
       case 0:
-      x+=1;break;
-      case 1:
       y+=1;break;
+      case 1:
+      x+=1;break;
       case 2:
-      x-=1;break;
-      case 3:
       y-=1;break;
+      case 3:
+      x-=1;break;
     } break;
     case 3:
     switch (direction){
       case 0:
-      y+=1;break;
-      case 1:
-      x-=1;break;
-      case 2:
-      y-=1;break;
-      case 3:
       x+=1;break;
+      case 1:
+      y-=1;break;
+      case 2:
+      x-=1;break;
+      case 3:
+      y+=1;break;
     } break; 
   }
 
@@ -414,24 +414,27 @@ int main()
     //   printf("\n");
     // }      
     //Turn if needed
-    turn(move); 
-    printf("\nMOVEMOVEMOVEMOVMEOVOE %d\n",move);   
+//    turn(move); 
+//    printf("\nMOVEMOVEMOVEMOVMEOVOE %d\n",move);   
     
     //Move forward 1 unit
-    stepUp();
+//    stepUp();
     
     printf("stepped\n");
 
     //Adjust position
     //adjustPosition();
     
+    //Update direction and position
+    printf("Move is %d\n", move);
+    positionUpdate(move,direction, position);
+    direction = directionUpdate(move, direction);
+    printf("Direction is %d\n", direction);
     printf("Position is %d %d\n", position[0],position[1]);
+
+    
     printf("Goal is %d %d \n",goal[0],goal[1]);
     
-    //Update direction and position
-    direction = directionUpdate(move, direction);
-    positionUpdate(move,direction, position);
-    
-    
+    pause(1000);
   }    
 }
