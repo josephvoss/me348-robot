@@ -6,13 +6,13 @@
 
 #include "ff_functions.h"
 
-int position[2];
-int ff_arr[6][6];
+//int position[2];
+//int ff_arr[6][6];
 //int wall_arr[6][6];
-int goal[2];
-int direction = 0;
-int move = 0;
-int wall_arr[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{0,1,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
+//int goal[2];
+//int direction = 0;
+//int move = 0;
+//int wall_arr[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{0,1,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
 
 void buildWall(int wall_arr[][6], int pos[], int direction)
 /*
@@ -26,8 +26,8 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
 {
   // N E S W - 8 4 2 1 -  0 1 2 3 
   int irLeft,irRight,sonarDis;
-  int x = pos[0];
-  int y = pos[1];
+  int x = pos[1];
+  int y = pos[0];
 
   //Read from ir sensors and ping sensor
   freqout(11, 1, 38000);                      
@@ -37,7 +37,7 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
   sonarDis = ping_cm(17);    
   
   //Set wall value to a known value since the robot is here
-  wall_arr[y][x] = 0;
+  wall_arr[x][y] = 0;
 
   //Orient straight, left, and right in terms of the cardinal directions
   int s_dir = direction;
@@ -57,15 +57,15 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
 //    for (int i=0; i<3-s_dir; i++)
 //      sum = sum*2;
       
-    wall_arr[y][x] += (int) pow(2,(int)3-s_dir);
+    wall_arr[x][y] += (int) pow(2,(int)3-s_dir);
   }
   if (irLeft == 0) //wall left
   {
-    wall_arr[y][x] += (int) pow(2,(int)3-l_dir);
+    wall_arr[x][y] += (int) pow(2,(int)3-l_dir);
   }
   if (irRight == 0) //wall right
   {
-    wall_arr[y][x] += (int) pow(2,(int)3-r_dir);
+    wall_arr[x][y] += (int) pow(2,(int)3-r_dir);
   }                                    
 }    
 
@@ -332,12 +332,12 @@ void adjustPosition() //move backward a little bit to avoid collision
 int main()
 {
   //Initialize variables to 0.
-  // int ff_arr[6][6];
-  // int wall_arr[6][6];
-  // int goal[2];
-  // int direction = 0;
-  // int move = 0;
-  //int position[2];
+  int ff_arr[6][6];
+  int wall_arr[6][6];
+  int goal[2];
+  int direction = 0;
+  int move = 0;
+  int position[2];
   
   
 
@@ -352,20 +352,20 @@ int main()
   drive_encoderPins(14, 15);
   
   //Init wifi hardware
-  //wifi_start(9, 8, 115200, USB_PGM_TERM);
+  wifi_start(9, 8, 115200, USB_PGM_TERM);
   pause(500);
   int event, id, handle;
   
   //Start watcher for controller post
-  //int postFromPageId = wifi_listen(HTTP, "/controller_post");
-  //printf("postFromPageId = %d\n", postFromPageId);
+  int postFromPageId = wifi_listen(HTTP, "/controller_post");
+  printf("postFromPageId = %d\n", postFromPageId);
 
   //Start watcher for map get
-  //int getFromPageId = wifi_listen(HTTP, "/map.html");
-  //printf("getFromPageId = %d\n", getFromPageId);  
+  int getFromPageId = wifi_listen(HTTP, "/map.html");
+  printf("getFromPageId = %d\n", getFromPageId);  
 
-  position[0] = 0;      //Set intial x to 0
-  position[1] = 4;      //Set intial y to 0
+  position[0] = -1;      //Set intial x to 0
+  position[1] = -1;      //Set intial y to 0
 
   //Set goal
   goal[0] = 3;
@@ -373,10 +373,10 @@ int main()
 
   //Wait until position is set by controller
   
-  // while( position[1] == -1 )
-  // {
-  //   wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
-  // }
+  while( position[1] == -1 )
+  {
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+  }
 
   while(1)
   {    
@@ -384,15 +384,15 @@ int main()
     //selfOrient();
     
     //Sense around robot
-    //buildWall(wall_arr, position, direction);
+    buildWall(wall_arr, position, direction);
     
     //Poll wifi module
-    //wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
 
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
     //move is a turn where 0 1 2 3 == S L R 180
-    move = ff_follower(position, goal, ff_arr,direction); 
+    move = ff_follower(position, goal, ff_arr,direction, wall_arr); 
     printf("\n");
     
     for (int i=0; i<6; i++)
@@ -414,11 +414,11 @@ int main()
     //   printf("\n");
     // }      
     //Turn if needed
-//    turn(move); 
+    turn(move); 
 //    printf("\nMOVEMOVEMOVEMOVMEOVOE %d\n",move);   
     
     //Move forward 1 unit
-//    stepUp();
+    stepUp();
     
     printf("stepped\n");
 

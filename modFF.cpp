@@ -70,7 +70,17 @@ while (n < 50)
 
   n++;
 }
+  for(int i=0;i<grid;i++)
+  {
+    for (int j=0;j<grid;j++)
+    {
+      //printf("%d\t",ff[i][j]);
+      printf("%d\t",walls[i][j]);
+    }
+    printf("\n");
+  }
 
+  printf("\n\n");
 
   for(int i=0;i<grid;i++)
   {
@@ -81,5 +91,7 @@ while (n < 50)
     }
     printf("\n");
   }
+
+
 
 }
