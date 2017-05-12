@@ -1,7 +1,7 @@
 #include "ff_functions.h"
 #include "simpletools.h"
 
-void ff_funct(int ff[][6], int goal[], int wallss[][6])
+void ff_funct(int ff[][6], int goal[], int walls[][6])
 /*
  * Modified flood fill. Used to solve directions of the matrix
  *
@@ -12,7 +12,7 @@ void ff_funct(int ff[][6], int goal[], int wallss[][6])
  */
 
 {
-  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
+//  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
 
 
 
@@ -104,26 +104,28 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
  // }
   
   //populates ff_value 
-  if (y+1 < 6) 		//CHECK SOUTH
+  if (x+1 < 6) 		//CHECK SOUTH
   {
-  	ff_value[2] = ff_arr[y+1][x];
+  	ff_value[2] = ff_arr[x+1][y];
   }
   
-  if (y-1 > -1) 		//CHECK NORTH
+  if (x-1 > -1) 		//CHECK NORTH
   {
-  	ff_value[0] = ff_arr[y-1][x];
+  	ff_value[0] = ff_arr[x-1][y-1];
   }
   
-  if (x+1<6) 		//CHECK EAST
+  if (y+1<6) 		//CHECK EAST
   {
-  	ff_value[1] = ff_arr[y][x+1];
+  	ff_value[1] = ff_arr[x][y+1];
   }
   
-  if (x-1 > -1) 		//CHECK WEST
+  if (y-1 > -1) 		//CHECK WEST
   {
-  	ff_value[3] = ff_arr[y][x-1];
+  	ff_value[3] = ff_arr[x][y-1];
   }
   
+  for (int i = 0; i<4; i++)
+    printf("FF %d\t %d\n", i, ff_value[i]);
   
   // for (int i =0;i<4;i++){
   //     if (ff_arr[y][x] - 1 == ff_value[i])
@@ -137,32 +139,32 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
     //if there are ties, default N,E,S,W tiebreakers
   for (int i=0;i<4;i++)
   {
-  	if ((ff_value[i] < lowest && i==0 ) && (walls[y][x] != 8 && walls[y][x] != 12 && walls[y][x] != 14  && walls[y][x] != 10 && walls[y][x] != 11 && walls[y][x] != 9 && walls[y][x] != 13 ))
+  	if ((ff_value[i] < lowest && i==0 ) && !(walls[x][y] & 8))
   	{
   	  lowest = ff_value[i];
   	  card = i;	//this tells you where to move
   	}
 
-    if ((ff_value[i] < lowest && i==1 )&& (walls[y][x] != 4 && walls[y][x] != 6 && walls[y][x] != 7 && walls[y][x] != 5 && walls[y][x] != 12 && walls[y][x] != 14 && walls[y][x] != 13))
+    if ((ff_value[i] < lowest && i==1 ) && !(walls[x][y] & 4))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
 
-    if ((ff_value[i] < lowest && i==2) && (walls[y][x] != 2 && walls[y][x] != 3 && walls[y][x] != 6 && walls[y][x] != 10 && walls[y][x] != 7 && walls[y][x] != 11 && walls[y][x] != 14 ))
+    if ((ff_value[i] < lowest && i==2) && !(walls[x][y] & 2))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
 
-    if ((ff_value[i] < lowest && i==3 ) && ( walls[y][x] != 1 && walls[y][x] != 3 && walls[y][x] != 5 && walls[y][x] != 9 && walls[y][x] != 7 && walls[y][x] != 11 && walls[y][x] != 13 ))
+    if ((ff_value[i] < lowest && i==3 ) && !(walls[x][y] & 1))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
   }
   printf("lowest %d\n",lowest);
-  printf("walls %d\n",walls[y][x]);
+  printf("walls %d\n",walls[x][y]);
   lowest = 256;
   
   //tells robot which ff_value to move
@@ -228,8 +230,8 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
     move = 3;
   }
 
-  
-  pos[0] = x;
-  pos[1] = y;
+  printf("MOVE is %d\n", move);
+  printf("DIR is %d\n", direction);
+
   return move;
 }
