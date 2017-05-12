@@ -1,4 +1,4 @@
-RoboMaze (1).c
+selfOrientTest.c
 >compiler=C
 >memtype=cmm main ram compact
 >optimize=-Os

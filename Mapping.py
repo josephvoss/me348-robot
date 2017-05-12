@@ -26,7 +26,7 @@ fig = plt.figure()
 ax = plt.axes()
 while True:
 
-    #Parse webpage
+    #bParse webpage
     f = urllib.urlopen(link)
 #    f = open("./map_test.html")
     
@@ -64,5 +64,5 @@ while True:
     plt.pause(4)
     print time.time()
     time.sleep(1)
-    
+
     

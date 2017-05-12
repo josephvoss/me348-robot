@@ -6,6 +6,14 @@
 
 #include "ff_functions.h"
 
+int position[2];
+int ff_arr[6][6];
+//int wall_arr[6][6];
+int goal[2];
+int direction = 0;
+int move = 0;
+int wall_arr[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{0,1,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
+
 void buildWall(int wall_arr[][6], int pos[], int direction)
 /*
  * Build wall array for current position
@@ -42,19 +50,20 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
   printf("%d\t%d\t%d\n",irLeft,sonarDis,irRight);
   
   int sum = 0;
+
   //If walls exist add to array
-  if (sonarDis < 5) //wall forward
+  if (sonarDis < 20) //wall forward
   {
 //    for (int i=0; i<3-s_dir; i++)
 //      sum = sum*2;
       
     wall_arr[y][x] += (int) pow(2,(int)3-s_dir);
   }
-  if (irLeft == 1) //wall left
+  if (irLeft == 0) //wall left
   {
     wall_arr[y][x] += (int) pow(2,(int)3-l_dir);
   }
-  if (irRight == 1) //wall right
+  if (irRight == 0) //wall right
   {
     wall_arr[y][x] += (int) pow(2,(int)3-r_dir);
   }                                    
@@ -83,85 +92,30 @@ void turn(int move)
  */
 {
   switch (move){
-    case 1 : //go straight
-    drive_goto(10,10);
-    pause(200);
-    break;
+    case 0 : //go straight   
+    break;   
     
-    case 2: //turn left
+    case 1: //turn left
+    printf("left\n");
     drive_goto(-26,25);
     pause(200);
     break;
     
-    case 3: //turn right
+    case 2: //turn right
+    printf("right\n");
     drive_goto(26,-25);
     pause(200);
     break;
     
-    case 4: //turn around
+    case 3: //turn around
+    printf("turn around\n");
     drive_goto(51,-51);
     pause(200);
     break;
   }      
 }
   
-void selfOrient()
-/*
- * Re-orient the robot based on the distance between the two walls.
- *
- * Can we *please* change these variable names or add comments or something so
- * someone other than micheal understands what's going on?
- *
- */
-{
-  int leftPingAngle,leftPing,min_leftPing,leftRotateAngle,rightPingAngle,rightPing,min_rightPing,rightRotateAngle;
-  min_leftPing = 100;
-  leftRotateAngle = 0;
-  min_rightPing = 100;
-  rightRotateAngle = 0;
-  
-  for (leftPingAngle=180 ; leftPingAngle>=90 ; leftPingAngle-=1) //scan the left side wall
-  {
-     servo_angle(16,leftPingAngle*10);
-     pause(20);
-     leftPing = ping_cm(17);
-     if (leftPing < min_leftPing)
-     {
-       leftRotateAngle = 180-leftPingAngle;//angle to correct
-       min_leftPing = leftPing;//store the minimum Ping sensor data
-     }
-     }
-   
-   servo_angle(16,0);
-   pause(1000);   
 
-           
-  for (rightPingAngle=0 ; rightPingAngle<=90 ; rightPingAngle+=1) //scan the left side wall
-  {
-    servo_angle(16,rightPingAngle*10);
-    pause(20);
-    rightPing = ping_cm(17);
-    if (rightPing < min_rightPing)
-    {
-      rightRotateAngle = rightPingAngle;//angle to correct
-      min_rightPing = rightPing;//store the minimum sensor data
-    }
-   }
-  
-  if (leftRotateAngle-rightRotateAngle >= 10) //rotate the robot if difference larger than 10 degree
-  {
-    int rotateTicks=leftRotateAngle*51/180;
-    drive_goto(rotateTicks,-rotateTicks);
-    pause(500); 
-    } 
-  else if (rightRotateAngle-leftRotateAngle >=10)
-  {
-    int rotateTicks=rightRotateAngle*51/180;
-    drive_goto(-rotateTicks,rotateTicks);
-    pause(500);  
-  }  
-}
-       
 int directionUpdate(int move, int currentDirection)
 /*
  * Updates the current direction of the robot.
@@ -175,30 +129,32 @@ int directionUpdate(int move, int currentDirection)
  */
 {
   switch (move){
-    case 1 : //go straight
+    case 0 : //go straight
     break;
     
-    case 2: //turn left
+    case 1: //turn left
     if (currentDirection == 0)
     {
       currentDirection = 3;
     }
     else {
       currentDirection-=1;     
-    }           
+    }   
     break;
-    
-    case 3: //turn right
+
+
+    case 2: //turn right
     if (currentDirection == 3)
     {
       currentDirection = 0;
     }
     else {
       currentDirection+=1;     
-    }   
+    }           
     break;
     
-    case 4: //turn around
+    
+    case 3: //turn around
     if (currentDirection==0 || currentDirection==1)
     {
       currentDirection+=2;
@@ -227,50 +183,50 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   int x = position[0];
   int y = position[1];
   switch (move){
-    case 1:
+    case 0:
     switch (direction){
       case 0:
-      y+=1;break;
+      y-=1;break;
       case 1:
       x+=1;break;
       case 2:
-      y-=1;break;
+      y+=1;break;
       case 3:
       x-=1;break;
-    }
-    case 2:      
+    } break;
+    case 1:      
     switch (direction){
       case 0:
       x-=1;break;
       case 1:
-      y+=1;break;
+      y-=1;break;
       case 2:
       x+=1;break;
       case 3:
+      y+=1;break;
+    } break;
+    case 2:
+    switch (direction){
+      case 0:
+      x+=1;break;
+      case 1:
+      y+=1;break;
+      case 2:
+      x-=1;break;
+      case 3:
       y-=1;break;
-    }  
+    } break;
     case 3:
     switch (direction){
       case 0:
-      x+=1;break;
-      case 1:
-      y-=1;break;
-      case 2:
-      x-=1;break;
-      case 3:
       y+=1;break;
-    }  
-    case 4:
-    switch (direction){
-      case 0:
-      y-=1;break;
       case 1:
       x-=1;break;
       case 2:
-      y+=1;break;
+      y-=1;break;
       case 3:
       x+=1;break;
-    }  
+    } break; 
   }
 
   position[0] = x;
@@ -290,14 +246,6 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   right = ping_cm(3);
 }  */
 
-void adjustPosition() //move backward a little bit to avoid collision
-{
-  int frontDis;
-  frontDis=ping_cm(17);
-  while (frontDis < 3) //assume 3cm. need to test
-  {drive_goto(-1,-1);
-  }
-}  
 
 void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6])
 /*
@@ -370,64 +318,83 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
     }            
 }  
   
+void adjustPosition() //move backward a little bit to avoid collision
+{
+  int frontDis;
+  frontDis=ping_cm(17);
+  while (frontDis <= 8);
+  {
+    drive_goto(-1,-1);
+    frontDis=ping_cm(17);
+  }
+}  
+
 int main()
 {
   //Initialize variables to 0.
-  int ff_arr[6][6];
-  int wall_arr[6][6];
-  int goal[2];
-  int direction = 0;
-  int move = 0;
-  int position[2];
+  // int ff_arr[6][6];
+  // int wall_arr[6][6];
+  // int goal[2];
+  // int direction = 0;
+  // int move = 0;
+  //int position[2];
   
+  
+
   for (int i=0; i<6; i++)
     for (int j=0; j<6; j++)
     {
       ff_arr[i][j] = 0;
-      wall_arr[i][j] = 255;
+      wall_arr[i][j] = 0;
     }      
+  //set encoder and servo pins
+  drive_servoPins(12,13);
+  drive_encoderPins(14, 15);
   
   //Init wifi hardware
-  wifi_start(9, 8, 115200, USB_PGM_TERM);
+  //wifi_start(9, 8, 115200, USB_PGM_TERM);
+  pause(500);
   int event, id, handle;
   
   //Start watcher for controller post
-  int postFromPageId = wifi_listen(HTTP, "/controller_post");
-  printf("postFromPageId = %d\n", postFromPageId);
+  //int postFromPageId = wifi_listen(HTTP, "/controller_post");
+  //printf("postFromPageId = %d\n", postFromPageId);
 
   //Start watcher for map get
-  int getFromPageId = wifi_listen(HTTP, "/map.html");
-  printf("getFromPageId = %d\n", getFromPageId);  
+  //int getFromPageId = wifi_listen(HTTP, "/map.html");
+  //printf("getFromPageId = %d\n", getFromPageId);  
 
-  position[0] = -1;      //Set intial x to 0
-  position[1] = -1;      //Set intial y to 0
+  position[0] = 0;      //Set intial x to 0
+  position[1] = 4;      //Set intial y to 0
 
   //Set goal
-  goal[0] = 2;
+  goal[0] = 3;
   goal[1] = 2;
 
   //Wait until position is set by controller
   
-  while( position[1] == -1 )
-  {
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
-  }
+  // while( position[1] == -1 )
+  // {
+  //   wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+  // }
 
   while(1)
   {    
     //Straighten self within the grid
-//    selfOrient();
+    //selfOrient();
     
     //Sense around robot
-    buildWall(wall_arr, position, direction);
+    //buildWall(wall_arr, position, direction);
     
     //Poll wifi module
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    //wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
 
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
-    move = ff_follower(position, goal, ff_arr);
+    //move is a turn where 0 1 2 3 == S L R 180
+    move = ff_follower(position, goal, ff_arr,direction); 
     printf("\n");
+    
     for (int i=0; i<6; i++)
     {
       for(int j=0; j<6; j++)
@@ -436,19 +403,35 @@ int main()
       }
       printf("\n");
     }      
-
+  
+    // printf("\n*******\n\n****\n");
+    // for (int i=0; i<6; i++)
+    // {
+    //   for(int j=0; j<6; j++)
+    //   {
+    //     printf("%d\t", wall_arr[i][j]);
+    //   }
+    //   printf("\n");
+    // }      
     //Turn if needed
-//    turn(move);    
+    turn(move); 
+    printf("\nMOVEMOVEMOVEMOVMEOVOE %d\n",move);   
     
     //Move forward 1 unit
-//    stepUp();
+    stepUp();
+    
+    printf("stepped\n");
 
     //Adjust position
-//    adjustPosition();
+    //adjustPosition();
+    
+    printf("Position is %d %d\n", position[0],position[1]);
+    printf("Goal is %d %d \n",goal[0],goal[1]);
     
     //Update direction and position
     direction = directionUpdate(move, direction);
-//    positionUpdate(move,direction, position);
+    positionUpdate(move,direction, position);
+    
     
   }    
 }

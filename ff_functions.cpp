@@ -1,6 +1,7 @@
 #include "ff_functions.h"
+#include "simpletools.h"
 
-void ff_funct(int ff[][6], int goal[], int walls[][6])
+void ff_funct(int ff[][6], int goal[], int wallss[][6])
 /*
  * Modified flood fill. Used to solve directions of the matrix
  *
@@ -9,11 +10,16 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
  *      1D array of goal target location
  *      2D array of walls, in binary notation
  */
-{
-  int n = 1;    //ff maze goal
-  ff[goal[0]][goal[1]] = n; //setting location of goal
 
-  while (n < 12)    
+{
+  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
+
+
+
+  int n = 1;    //ff maze goal
+  ff[goal[1]][goal[0]] = n; //setting location of goal
+
+  while (n < 50)    
   {
     for(int i=0; i<6;i++) 
     {
@@ -61,7 +67,7 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
     return;
 }
 
-int ff_follower(int pos[], int goal[], int ff_arr[][6])
+int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
 /*
  * Flood Fill Follower? - Takes a filled ff array and returns a position it needs
  * to go
@@ -75,17 +81,26 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6])
  *      Integer direction to turn
  */
 {
+  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
+  printf("fuck this\n");
+  for(int i=0;i<6;i++){
+    for(int j=0;j<6;j++){
+      printf("%d\t",walls[i][j]);
+    }
+    printf("\n");
+  }
   
   int x = pos[0];
   int y = pos[1];
   int ff_value[4];
   int lowest = 12;	//corresponds to "n"
-  int dir= 256; //out of the way value
-  int dir_arr[50];
+  int card = 256; //out of the way value
+  int card_arr[50];
+  int move;
   
   for (int i=0;i<50;i++)
   {
-    dir_arr[i] = 256; 	//set to high value
+    card_arr[i] = 256; 	//set to high value
   }
   
   for (int i=0;i<4;i++)
@@ -115,46 +130,111 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6])
   }
   
   
+  // for (int i =0;i<4;i++){
+  //     if (ff_arr[y][x] - 1 == ff_value[i])
+  //     {
+  //       card = i;
+  //     }
+  //   }
+  printf("x y %d %d\n", x,y);
+
   //finds lowest value which is the next direction
     //if there are ties, default N,E,S,W tiebreakers
   for (int i=0;i<4;i++)
   {
-  	if (ff_value[i] < lowest)
+  	if ((ff_value[i] < lowest && i==0 ) && (walls[y][x] != 8 && walls[y][x] != 12 && walls[y][x] != 14  && walls[y][x] != 10 && walls[y][x] != 11 && walls[y][x] != 9 && walls[y][x] != 13 ))
   	{
   	  lowest = ff_value[i];
-  	  dir= i;	//this tells you where to move
+  	  card = i;	//this tells you where to move
   	}
+
+    if ((ff_value[i] < lowest && i==1 )&& (walls[y][x] != 4 && walls[y][x] != 6 && walls[y][x] != 7 && walls[y][x] != 5 && walls[y][x] != 12 && walls[y][x] != 14 && walls[y][x] != 13))
+    {
+      lowest = ff_value[i];
+      card = i; //this tells you where to move
+    }
+
+    if ((ff_value[i] < lowest && i==2) && (walls[y][x] != 2 && walls[y][x] != 3 && walls[y][x] != 6 && walls[y][x] != 10 && walls[y][x] != 7 && walls[y][x] != 11 && walls[y][x] != 14 ))
+    {
+      lowest = ff_value[i];
+      card = i; //this tells you where to move
+    }
+
+    if ((ff_value[i] < lowest && i==3 ) && ( walls[y][x] != 1 && walls[y][x] != 3 && walls[y][x] != 5 && walls[y][x] != 9 && walls[y][x] != 7 && walls[y][x] != 11 && walls[y][x] != 13 ))
+    {
+      lowest = ff_value[i];
+      card = i; //this tells you where to move
+    }
   }
-  
+  printf("lowest %d\n",lowest);
+  printf("walls %d\n",walls[y][x]);
   lowest = 256;
   
   //tells robot which ff_value to move
-  switch(dir)
+    printf("CARD IS %d\n",card);
+    
+
+  // switch(card)
+  // {
+  // 	case 0: //north
+  // 	{
+  //     y--;
+  //     break;
+  // 	}
+  
+  // 	case 1: //east
+  // 	{
+  //     x++;
+  // 	  break;
+  // 	}
+  
+  // 	case 2: //south
+  // 	{
+  //     y++;
+  // 	  break;
+  // 	}	
+  // 	case 3: //west
+  // 	{
+  // 	  x--;
+  //     break;
+  // 	}	
+  // }
+
+  //change card to a dir
+
+  //go straight
+  if (card == direction)
   {
-  	case 0: //north
-  	{
-      y--;
-      break;
-  	}
-  
-  	case 1: //east
-  	{
-      x++;
-  	  break;
-  	}
-  
-  	case 2: //south
-  	{
-      y++;
-  	  break;
-  	}	
-  	case 3: //west
-  	{
-  	  x--;
-      break;
-  	}	
+    move = 0;
   }
+
+  //turn left
+  if (card == 3 && direction==0){
+    move = 1;
+  }
+  else if ((card+1) == direction)
+  {
+    move = 1;
+  }
+
+  //turn right
+  if (card == 0 && direction == 3){
+    move = 2;    
+  }
+
+  else if ((card-1)==direction)
+  {
+    move = 2;
+  }
+
+  //turn 180
+  if ((card - direction == -2) || (card-direction == 2))
+  {
+    move = 3;
+  }
+
+  
   pos[0] = x;
   pos[1] = y;
-  return dir;
+  return move;
 }

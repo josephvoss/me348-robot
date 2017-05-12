@@ -6,7 +6,8 @@ int main(void)
 int grid = 6;
 int ff[grid][grid];
 
-int walls[grid][grid];
+//int walls[grid][grid];
+int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{0,1,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
 
 
 for(int i=0;i<grid;i++)
@@ -14,14 +15,14 @@ for(int i=0;i<grid;i++)
   for (int j=0;j<grid;j++)
   {
     ff[i][j] = 0;
-    walls[i][j] = 0;
+    //walls[i][j] = 0;
   }
 }
 
 int n = 1;    //goal value
-ff[2][2] = n; //setting location of goal
+ff[2][3] = n; //setting location of goal
 
-while (n < 12)
+while (n < 50)
 {
   for(int i=0; i<grid;i++)
   {
@@ -76,6 +77,7 @@ while (n < 12)
     for (int j=0;j<grid;j++)
     {
       printf("%d\t",ff[i][j]);
+      //printf("%d\t",walls[i][j]);
     }
     printf("\n");
   }
