@@ -27,7 +27,7 @@ fig = plt.figure()
 ax = plt.axes()
 while True:
 
-    #Parse webpage
+    #bParse webpage
     f = urllib.urlopen(link)
 #    f = open("./map_test.html")
     

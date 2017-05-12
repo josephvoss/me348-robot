@@ -6,7 +6,7 @@ a = np.zeros((grid,grid))
 
 
 n = 1			#goal value
-a[2,2] = n 		#setting location of goal	
+a[2,3] = n 		#setting location of goal	
 
 #print(a)
 
