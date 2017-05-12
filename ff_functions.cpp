@@ -14,12 +14,12 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
 {
 //  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
 
-  for (int i=0; i<6; i++)
-  {
-    for (int j=0; j<6; j++)
-      printf("%d\t", walls[i][j]);
-    printf("\n");
-  }
+  // for (int i=0; i<6; i++)
+  // {
+  //   for (int j=0; j<6; j++)
+  //     printf("%d\t", walls[i][j]);
+  //   printf("\n");
+  // }
 
   int n = 1;    //ff maze goal
   ff[goal[1]][goal[0]] = n; //setting location of goal
@@ -136,25 +136,25 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction, int walls
     //if there are ties, default N,E,S,W tiebreakers
   for (int i=0;i<4;i++)
   {
-  	if ((ff_value[i] < lowest && i==0 ) && !(walls[x][y] & 8))
+  	if ((ff_value[i] < lowest && i==0 ) && !(walls[y][x] & 8))
   	{
   	  lowest = ff_value[i];
   	  card = i;	//this tells you where to move
   	}
 
-    if ((ff_value[i] < lowest && i==1 ) && !(walls[x][y] & 4))
+    if ((ff_value[i] < lowest && i==1 ) && !(walls[y][x] & 4))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
 
-    if ((ff_value[i] < lowest && i==2) && !(walls[x][y] & 2))
+    if ((ff_value[i] < lowest && i==2) && !(walls[y][x] & 2))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
 
-    if ((ff_value[i] < lowest && i==3 ) && !(walls[x][y] & 1))
+    if ((ff_value[i] < lowest && i==3 ) && !(walls[y][x] & 1))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move

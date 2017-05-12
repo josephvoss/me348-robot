@@ -82,8 +82,10 @@ void stepUp()
   //Drive 90 ticks in current direction
   //drive_goto(90,90);
   //move 27.68cm
-  drive_speed(30,30);
-  pause(3000);
+  drive_ramp(20,20);
+  drive_speed(20,20);
+  pause(4500);
+  drive_speed(0,0);
 
 }
 
@@ -101,23 +103,26 @@ void turn(int move)
     
     case 1: //turn left
     printf("left\n");
-    //drive_goto(-26,25);
-    drive_speed(-25,25);
-    pause(1000);
+    drive_goto(-25,25);
+    //drive_speed(-25,25);
+    //pause(1000);
+    //drive_speed(0,0);
     break;
     
     case 2: //turn right
     printf("right\n");
-    //drive_goto(26,-25);
-    drive_speed(25,-25);
-    pause(1000);
+    drive_goto(25,-25);
+    //drive_speed(25,-25);
+    //pause(1000);
+    //drive_speed(0,0);
     break;
     
     case 3: //turn around
     printf("turn around\n");
-    //drive_goto(51,-51);
-    drive_speed(51,-51);
-    pause(1000);
+    drive_goto(51,-51);
+    //drive_speed(25,-25);
+    //pause(2000);
+    //drive_speed(0,0);
     break;
   }      
 }
@@ -304,7 +309,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
         {
           i = x / 6;
           j = x % 6;
-          sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
+          sprintf(wall_string+strlen(wall_string),"%d\t",walls[j][i]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
         }          
         //Trying to rescue last integer
