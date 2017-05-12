@@ -90,23 +90,18 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
     printf("\n");
   }
   
-  int x = pos[0];
-  int y = pos[1];
+  int x = pos[1];
+  int y = pos[0];
   int ff_value[4];
   int lowest = 12;	//corresponds to "n"
   int card = 256; //out of the way value
-  int card_arr[50];
   int move;
   
-  for (int i=0;i<50;i++)
-  {
-    card_arr[i] = 256; 	//set to high value
-  }
-  
-  for (int i=0;i<4;i++)
-  {
-  	ff_value[i] = 256;	//ff_value initialized to high number
-  }
+
+  //for (int i=0;i<4;i++)
+  //{
+  	//ff_value[i] = 256;	//ff_value initialized to high number
+ // }
   
   //populates ff_value 
   if (y+1 < 6) 		//CHECK SOUTH
