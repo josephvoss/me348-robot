@@ -4,11 +4,11 @@
 #include "abdrive.h"
 #include "wifi.h"
 
-#include "ff_functions.h"
+//#include "ff_functions.h"
 
 //int position[2];
 //int ff_arr[6][6];
-int wall_arr[6][6];
+//int wall_arr[6][6];
 //int goal[2];
 //int direction = 0;
 //int move = 0;
@@ -58,8 +58,8 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
   else l_dir = (direction - 1) % 4;
   int r_dir = (direction + 1) % 4;
 
-  printf("%d\t%d\t%d\n",l_dir,s_dir,r_dir);
-  printf("%d\t%d\t%d\n",sonLeft,sonarFront,sonRight);
+ // printf("%d\t%d\t%d\n",l_dir,s_dir,r_dir);
+  printf("L R Str %d\t%d\t%d\n",sonLeft,sonarFront,sonRight);
   
   int sum = 0;
 
@@ -94,26 +94,40 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
 
         if (wall_arr[i-1][j] != 0 && i>0)  //north
         {
-          cell_update[0] = wall_arr[i-1][j] & 2;
-          printf("cell update N %d\n",cell_update[0]);
+          if (wall_arr[i-1][j] == 2 || wall_arr[i-1][j] == 3 || wall_arr[i-1][j] == 6 || wall_arr[i-1][j] == 10 || wall_arr[i-1][j] == 7 || wall_arr[i-1][j] == 11 || wall_arr[i-1][j] == 14)
+          {
+            cell_update[0] = 1;
+            //printf("cell update N %d\n",cell_update[0]);
+          }
         }
 
         if (wall_arr[i][j+1] != 0 && j!=5)  // east
         {
-          cell_update[1] = wall_arr[i][j+1] & 1;
-          printf("cell update E %d\n",cell_update[1]);
+          if (wall_arr[i][j+1] == 1 || wall_arr[i][j+1] == 3 || wall_arr[i][j+1] == 5 || wall_arr[i][j+1] == 7 || wall_arr[i][j+1] == 9 || wall_arr[i][j+1] == 11 || wall_arr[i][j+1] == 13)
+          {
+            cell_update[1] = 1;
+            //printf("cell update E %d\n",cell_update[1]);
+          }
+          
         }
 
        if (wall_arr[i+1][j] != 0 && i!=5)  // south
        {
-         cell_update[2] = wall_arr[i+1][j] & 8;
-         printf("cell update S %d\n",cell_update[2]);
+        if (wall_arr[i+1][j] == 8 || wall_arr[i+1][j] == 12 || wall_arr[i+1][j] == 14 || wall_arr[i+1][j] == 10 || wall_arr[i+1][j] == 11 || wall_arr[i+1][j] == 9 || wall_arr[i+1][j] == 13)
+        {
+          cell_update[2] = 1;
+          //printf("cell update S %d\n",cell_update[2]);
+        }
        }
 
        if (wall_arr[i][j-1] != 0 && j>0)  // west
        {
-         cell_update[3] = wall_arr[i][j-1] & 4;
-         printf("cell update W %d\n",cell_update[3]);
+        if (wall_arr[i][j-1] == 4 || wall_arr[i][j-1] == 6 || wall_arr[i][j-1] == 7 || wall_arr[i][j-1] == 5 || wall_arr[i][j-1] == 12 || wall_arr[i][j-1] == 14 || wall_arr[i][j-1] == 13)
+        {
+          cell_update[3] = 1;
+          //printf("cell update W %d\n",cell_update[3]);
+        }
+        
        }
 
        wall_arr[i][j] = cell_update[0]*8 + cell_update[1]*4 + cell_update[2]*2 + cell_update[3];
@@ -152,9 +166,12 @@ void turn(int move)
 {
   drive_speed(0,0);
   switch (move){
-    case 0 : //go straight   
-    break;   
-    
+    case 0 : //go straight  
+    {
+      printf("straight\n");
+      break;
+    } 
+
     case 1: //turn left
     printf("left\n");
     //drive_goto(-26,25);
@@ -271,7 +288,6 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
     switch (direction){
       case 0:{
       y-=1;
-      printf("yesthisisleft");
       break;
     }
       case 1:
@@ -409,7 +425,7 @@ int main()
 {
   //Initialize variables to 0.
   int ff_arr[6][6];
-  //int wall_arr[6][6];
+  int wall_arr[6][6];
   int goal[2];       // [x,y]
   int direction = 0; // [N=0, E=1, S=2, W=3]
   int move = 0;      // [For=0, Left=1, Right=2, 180=3]
@@ -462,11 +478,13 @@ int main()
     //Sense around robot
     buildWall(wall_arr, position, direction);
 
+    printf("Wall Array\n");
     for (int i=0; i<6; i++)
     {
       for(int j=0; j<6; j++)
       {
         printf("%d\t", wall_arr[i][j]);
+        ff_arr[i][j]=0; //need to initialize back to 0
       }
       printf("\n");
     }     
@@ -474,13 +492,62 @@ int main()
     wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
     
     //Decide where to go 
-    ff_funct(ff_arr, goal, wall_arr);
+    //ff_funct(ff_arr, goal, wall_arr);
+
+    ////FF BUILDER
+    int n = 1;    //goal value
+    ff_arr[goal[0]][goal[1]] = n; //setting location of goal
+
+    while (n < 50)
+    {
+      for(int i=0; i<6;i++)
+      {
+        for (int j=0; j<6;j++)
+        {
+          if ((ff_arr[i][j]) == n)    
+          {
+            
+            if (i+1<6)     //CHECK SOUTH
+            {
+              if (ff_arr[i+1][j] != 1 && ff_arr[i+1][j] == 0 && (wall_arr[i][j] & 2) == 0)
+              {
+                ff_arr[i+1][j] = n+1;
+              }
+            }
+
+            if ((i-1)>-1)     //CHECK NORTH
+            {
+              if (ff_arr[i-1][j] != 1 && ff_arr[i-1][j] == 0 && (wall_arr[i][j] & 8) == 0)
+              {
+                ff_arr[i-1][j] = n+1;
+              }
+            }
+
+            if ((j+1)<6)     //CHECK EAST
+            {
+              if (ff_arr[i][j+1] != 1 && ff_arr[i][j+1] == 0 && (wall_arr[i][j] & 4)== 0)
+              {
+                ff_arr[i][j+1] = n+1;
+              }
+            }
+
+            if ((j-1)>-1)     //CHECK WEST
+            {
+              if (ff_arr[i][j-1] != 1 && ff_arr[i][j-1] == 0 && (wall_arr[i][j] & 1) == 0)
+              {
+                ff_arr[i][j-1] = n+1;
+              }
+            }
+          }
+
+
+        }
+      }
+
+      n++;
+    }
     
-    //move is a turn where 0 1 2 3 == S L R 180
-    move = ff_follower(position, goal, ff_arr,direction, wall_arr); 
-    printf("\n");
-    
-    
+    printf("FF Array\n");
     for (int i=0; i<6; i++)
     {
       for(int j=0; j<6; j++)
@@ -488,20 +555,130 @@ int main()
         printf("%d\t", ff_arr[i][j]);
       }
       printf("\n");
-    }      
-  
-    // printf("\n*******\n\n****\n");
-    // for (int i=0; i<6; i++)
-    // {
-    //   for(int j=0; j<6; j++)
-    //   {
-    //     printf("%d\t", wall_arr[i][j]);
-    //   }
-    //   printf("\n");
-    // }     
+    }     
+    
+
+      //FF FOLLOW
+      int x = position[0];
+      int y = position[1];
+      int ff_value[4];
+      int lowest = 256;	
+      int card = 256; //out of the way value
+      int move;
+      
+      //populates ff_value 
+      //N E S W -- 0 1 2 3 
+
+      for(int i =0;i<4;i++){
+        ff_value[i] = 256;
+      }
+
+      if (x-1 > -1)     //CHECK NORTH
+      {
+        ff_value[0] = ff_arr[x-1][y];
+      }
+
+      if (y+1<6)    //CHECK EAST
+      {
+        ff_value[1] = ff_arr[x][y+1];
+      }
+
+      if (x+1 < 6) 		//CHECK SOUTH
+      {
+      	ff_value[2] = ff_arr[x+1][y];
+      }
+      
+      
+      if (y-1 > -1) 		//CHECK WEST
+      {
+      	ff_value[3] = ff_arr[x][y-1];
+      }
+      
+      //Print FF Value
+      // for (int i = 0; i<4; i++)
+      //   printf("FF %d\t %d\n", i, ff_value[i]);
+      
+      // for (int i =0;i<4;i++){
+      //     if (ff_arr[y][x] - 1 == ff_value[i])
+      //     {
+      //       card = i;
+      //     }
+      //   }
+      //printf("x y %d %d\n", x,y);
+
+      //finds lowest value which is the next direction
+        //if there are ties, default N,E,S,W tiebreakers
+      for (int i=0;i<4;i++)
+      {
+      	if ((ff_value[i] < lowest && i==0 ) && !(wall_arr[x][y] & 8))
+      	{
+      	  lowest = ff_value[i];
+      	  card = i;	//this tells you where to move
+      	}
+
+        if ((ff_value[i] < lowest && i==1 ) && !(wall_arr[x][y] & 4))
+        {
+          lowest = ff_value[i];
+          card = i; //this tells you where to move
+        }
+
+        if ((ff_value[i] < lowest && i==2) && !(wall_arr[x][y] & 2))
+        {
+          lowest = ff_value[i];
+          card = i; //this tells you where to move
+        }
+
+        if ((ff_value[i] < lowest && i==3 ) && !(wall_arr[x][y] & 1))
+        {
+          lowest = ff_value[i];
+          card = i; //this tells you where to move
+        }
+      }
+      //printf("lowest %d\n",lowest);
+      lowest = 256;
+      
+      //tells robot which ff_value to move
+       //printf("CARD IS %d\n",card);
+        
+
+
+      //go straight
+      if (card == direction)
+      {
+        move = 0;
+      }
+
+      //turn left
+      if (card == 3 && direction==0){
+        move = 1;
+      }
+      else if ((card+1) == direction)
+      {
+        move = 1;
+      }
+
+      //turn right
+      if (card == 0 && direction == 3){
+        move = 2;    
+      }
+
+      else if ((card-1)==direction)
+      {
+        move = 2;
+      }
+
+      //turn 180
+      if ((card - direction == -2) || (card-direction == 2))
+      {
+        move = 3;
+      }
+        
+    //move is a turn where 0 1 2 3 == S L R 180
+    //move = ff_follower(position, goal, ff_arr,direction, wall_arr); 
+    printf("\n");
     
     
-    
+
     
     //EXECUTE TURN & MOVEMENT 
     //Turn if needed
@@ -511,7 +688,7 @@ int main()
     //Move forward 1 unit
     stepUp();
     
-    printf("stepped\n");
+    //printf("stepped\n");
 
     //Adjust position
     //adjustPosition();
@@ -527,6 +704,14 @@ int main()
     
     printf("Goal is %d %d \n",goal[0],goal[1]);
     
+    if (ff_arr[position[0]][position[1]] == 1)
+    {
+      drive_speed(-55,55);
+      pause(5000);
+      drive_speed(0,0);
+      printf("YOU DID IT");
+      break;
+    }    
     pause(1000);
-  }    
+  }   
 }
