@@ -77,10 +77,14 @@ void stepUp()
  */
 {
   //Set ramping speed. Prevents overacceleration
-  drive_setRampStep(1);
+  //drive_setRampStep(1);
 
   //Drive 90 ticks in current direction
-  drive_goto(90,90);
+  //drive_goto(90,90);
+  //move 27.68cm
+  drive_speed(30,30);
+  pause(3000);
+
 }
 
 void turn(int move)
@@ -97,20 +101,23 @@ void turn(int move)
     
     case 1: //turn left
     printf("left\n");
-    drive_goto(-26,25);
-    pause(200);
+    //drive_goto(-26,25);
+    drive_speed(-25,25);
+    pause(1000);
     break;
     
     case 2: //turn right
     printf("right\n");
-    drive_goto(26,-25);
-    pause(200);
+    //drive_goto(26,-25);
+    drive_speed(25,-25);
+    pause(1000);
     break;
     
     case 3: //turn around
     printf("turn around\n");
-    drive_goto(51,-51);
-    pause(200);
+    //drive_goto(51,-51);
+    drive_speed(51,-51);
+    pause(1000);
     break;
   }      
 }
