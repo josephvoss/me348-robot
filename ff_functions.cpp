@@ -14,7 +14,12 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
 {
 //  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
 
-
+  for (int i=0; i<6; i++)
+  {
+    for (int j=0; j<6; j++)
+      printf("%d\t", walls[i][j]);
+    printf("\n");
+  }
 
   int n = 1;    //ff maze goal
   ff[goal[1]][goal[0]] = n; //setting location of goal
@@ -67,7 +72,7 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
     return;
 }
 
-int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
+int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction, int walls[][6])
 /*
  * Flood Fill Follower? - Takes a filled ff array and returns a position it needs
  * to go
@@ -81,19 +86,11 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
  *      Integer direction to turn
  */
 {
-  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
-  printf("fuck this\n");
-  for(int i=0;i<6;i++){
-    for(int j=0;j<6;j++){
-      printf("%d\t",walls[i][j]);
-    }
-    printf("\n");
-  }
   
   int x = pos[1];
   int y = pos[0];
   int ff_value[4];
-  int lowest = 12;	//corresponds to "n"
+  int lowest = 256;	
   int card = 256; //out of the way value
   int move;
   
@@ -164,7 +161,6 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
     }
   }
   printf("lowest %d\n",lowest);
-  printf("walls %d\n",walls[x][y]);
   lowest = 256;
   
   //tells robot which ff_value to move
