@@ -324,12 +324,12 @@ void adjustPosition() //move backward a little bit to avoid collision
 int main()
 {
   //Initialize variables to 0.
-  // int ff_arr[6][6];
-  // int wall_arr[6][6];
-  // int goal[2];
-  // int direction = 0;
-  // int move = 0;
-  //int position[2];
+  int ff_arr[6][6];
+  int wall_arr[6][6];
+  int goal[2];
+  int direction = 0;
+  int move = 0;
+  int position[2];
   
   
 
@@ -349,12 +349,12 @@ int main()
   int event, id, handle;
   
   //Start watcher for controller post
-  //int postFromPageId = wifi_listen(HTTP, "/controller_post");
-  //printf("postFromPageId = %d\n", postFromPageId);
+  int postFromPageId = wifi_listen(HTTP, "/controller_post");
+  printf("postFromPageId = %d\n", postFromPageId);
 
   //Start watcher for map get
-  //int getFromPageId = wifi_listen(HTTP, "/map.html");
-  //printf("getFromPageId = %d\n", getFromPageId);  
+  int getFromPageId = wifi_listen(HTTP, "/map.html");
+  printf("getFromPageId = %d\n", getFromPageId);  
 
   position[0] = 3;      //Set intial x to 0
   position[1] = 0;      //Set intial y to 0
@@ -384,7 +384,7 @@ int main()
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
     //move is a turn where 0 1 2 3 == S L R 180
-    move = ff_follower(position, goal, ff_arr,direction); 
+    move = ff_follower(position, goal, ff_arr,direction, wall_arr); 
     printf("\n");
     
     for (int i=0; i<6; i++)

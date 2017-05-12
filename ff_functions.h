@@ -9,7 +9,7 @@ void ff_funct(int[][6], int[], int[][6]);
  *      2D array of walls, in binary notation
  */
 
-int ff_follower(int[], int[], int[][6], int direction);
+int ff_follower(int[], int[], int[][6], int direction, int [][6]);
 /*
  * Flood Fill Follower? - Takes a filled ff array and returns a position it needs
  * to go
