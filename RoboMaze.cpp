@@ -183,7 +183,7 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   int x = position[0];
   int y = position[1];
   switch (move){
-    case 0:
+    case 0: //straight
     switch (direction){
       case 0:
       x-=1;break;
@@ -364,8 +364,8 @@ int main()
   //int getFromPageId = wifi_listen(HTTP, "/map.html");
   //printf("getFromPageId = %d\n", getFromPageId);  
 
-  position[0] = 0;      //Set intial x to 0
-  position[1] = 4;      //Set intial y to 0
+  position[0] = 3;      //Set intial x to 0
+  position[1] = 0;      //Set intial y to 0
 
   //Set goal
   goal[0] = 3;
