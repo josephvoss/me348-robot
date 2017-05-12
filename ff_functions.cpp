@@ -22,7 +22,7 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
   }
 
   int n = 1;    //ff maze goal
-  ff[goal[1]][goal[0]] = n; //setting location of goal
+  ff[goal[0]][goal[1]] = n; //setting location of goal
 
   while (n < 50)    
   {
@@ -87,8 +87,8 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction, int walls
  */
 {
   
-  int x = pos[1];
-  int y = pos[0];
+  int x = pos[0];
+  int y = pos[1];
   int ff_value[4];
   int lowest = 256;	
   int card = 256; //out of the way value
