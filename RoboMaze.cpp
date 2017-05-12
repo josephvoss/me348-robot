@@ -6,14 +6,6 @@
 
 #include "ff_functions.h"
 
-int position[2];
-int ff_arr[6][6];
-//int wall_arr[6][6];
-int goal[2];
-int direction = 0;
-int move = 0;
-int wall_arr[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{0,1,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
-
 void buildWall(int wall_arr[][6], int pos[], int direction)
 /*
  * Build wall array for current position
@@ -384,10 +376,10 @@ int main()
     //selfOrient();
     
     //Sense around robot
-    //buildWall(wall_arr, position, direction);
+    buildWall(wall_arr, position, direction);
     
     //Poll wifi module
-    //wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
 
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
@@ -414,16 +406,16 @@ int main()
     //   printf("\n");
     // }      
     //Turn if needed
-//    turn(move); 
+    turn(move); 
 //    printf("\nMOVEMOVEMOVEMOVMEOVOE %d\n",move);   
     
     //Move forward 1 unit
-//    stepUp();
+    stepUp();
     
     printf("stepped\n");
 
     //Adjust position
-    //adjustPosition();
+    adjustPosition();
     
     //Update direction and position
     printf("Move is %d\n", move);
