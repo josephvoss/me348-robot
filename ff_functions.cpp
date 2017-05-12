@@ -61,7 +61,7 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
     return;
 }
 
-int ff_follower(int pos[], int goal[], int ff_arr[][6])
+int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
 /*
  * Flood Fill Follower? - Takes a filled ff array and returns a position it needs
  * to go
@@ -80,12 +80,13 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6])
   int y = pos[1];
   int ff_value[4];
   int lowest = 12;	//corresponds to "n"
-  int dir= 256; //out of the way value
-  int dir_arr[50];
+  int card = 256; //out of the way value
+  int card_arr[50];
+  int move;
   
   for (int i=0;i<50;i++)
   {
-    dir_arr[i] = 256; 	//set to high value
+    card_arr[i] = 256; 	//set to high value
   }
   
   for (int i=0;i<4;i++)
@@ -122,14 +123,14 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6])
   	if (ff_value[i] < lowest)
   	{
   	  lowest = ff_value[i];
-  	  dir= i;	//this tells you where to move
+  	  card = i;	//this tells you where to move
   	}
   }
   
   lowest = 256;
   
   //tells robot which ff_value to move
-  switch(dir)
+  switch(card)
   {
   	case 0: //north
   	{
@@ -154,7 +155,42 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6])
       break;
   	}	
   }
+
+  //change card to a dir
+
+  //go straight
+  if (card == direction)
+  {
+    move = 0;
+  }
+
+  //turn left
+  if (card == 3 && direction==0){
+    move = 1;
+  }
+  else if ((card+1) == direction)
+  {
+    move = 1;
+  }
+
+  //turn right
+  if (card == 0 && direction == 3){
+    move = 2;    
+  }
+
+  else if ((card-1)==direction)
+  {
+    move = 2;
+  }
+
+  //turn 180
+  if ((card - direction == -2) || (card-direction == 2))
+  {
+    move = 3;
+  }
+
+  
   pos[0] = x;
   pos[1] = y;
-  return dir;
+  return move;
 }

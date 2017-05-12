@@ -84,22 +84,22 @@ void turn(int move)
  */
 {
   switch (move){
-    case 1 : //go straight
+    case 0 : //go straight
     drive_goto(10,10);
     pause(200);
     break;
     
-    case 2: //turn left
-    drive_goto(-26,25);
-    pause(200);
-    break;
-    
-    case 3: //turn right
+    case 1: //turn left
     drive_goto(26,-25);
     pause(200);
     break;
     
-    case 4: //turn around
+    case 2: //turn right
+    drive_goto(-26,25);
+    pause(200);
+    break;
+    
+    case 3: //turn around
     drive_goto(51,-51);
     pause(200);
     break;
@@ -176,30 +176,32 @@ int directionUpdate(int move, int currentDirection)
  */
 {
   switch (move){
-    case 1 : //go straight
+    case 0 : //go straight
     break;
     
-    case 2: //turn left
+    case 1: //turn left
     if (currentDirection == 0)
     {
       currentDirection = 3;
     }
     else {
       currentDirection-=1;     
-    }           
+    }   
     break;
-    
-    case 3: //turn right
+
+
+    case 2: //turn right
     if (currentDirection == 3)
     {
       currentDirection = 0;
     }
     else {
       currentDirection+=1;     
-    }   
+    }           
     break;
     
-    case 4: //turn around
+    
+    case 3: //turn around
     if (currentDirection==0 || currentDirection==1)
     {
       currentDirection+=2;
@@ -228,7 +230,7 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   int x = position[0];
   int y = position[1];
   switch (move){
-    case 1:
+    case 0:
     switch (direction){
       case 0:
       y+=1;break;
@@ -238,8 +240,8 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
       y-=1;break;
       case 3:
       x-=1;break;
-    }
-    case 2:      
+    } break;
+    case 1:      
     switch (direction){
       case 0:
       x-=1;break;
@@ -249,21 +251,21 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
       x+=1;break;
       case 3:
       y-=1;break;
-    }  
+    } break;
+    case 2:
+    switch (direction){
+      case 0:
+      x+=1;break;
+      case 1:
+      y-=1;break;
+      case 2:
+      x-=1;break;
+      case 3:
+      y+=1;break;
+    } break;
     case 3:
     switch (direction){
       case 0:
-      x+=1;break;
-      case 1:
-      y-=1;break;
-      case 2:
-      x-=1;break;
-      case 3:
-      y+=1;break;
-    }  
-    case 4:
-    switch (direction){
-      case 0:
       y-=1;break;
       case 1:
       x-=1;break;
@@ -271,7 +273,7 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
       y+=1;break;
       case 3:
       x+=1;break;
-    }  
+    } break; 
   }
 
   position[0] = x;
@@ -291,14 +293,6 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   right = ping_cm(3);
 }  */
 
-void adjustPosition() //move backward a little bit to avoid collision
-{
-  int frontDis;
-  frontDis=ping_cm(17);
-  while (frontDis < 3) //assume 3cm. need to test
-  {drive_goto(-1,-1);
-  }
-}  
 
 void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6])
 /*
@@ -376,7 +370,9 @@ void adjustPosition() //move backward a little bit to avoid collision
   int frontDis;
   frontDis=ping_cm(17);
   while (frontDis <= 8);
-  {drive_goto(-1,-1);
+  {
+    drive_goto(-1,-1);
+    frontDis=ping_cm(17);
   }
 }  
 
@@ -439,8 +435,10 @@ int main()
 
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
-    move = ff_follower(position, goal, ff_arr);
+    //move is a turn where 0 1 2 3 == S L R 180
+    move = ff_follower(position, goal, ff_arr,direction); 
     printf("\n");
+    
     for (int i=0; i<6; i++)
     {
       for(int j=0; j<6; j++)
@@ -464,9 +462,13 @@ int main()
     
     //Move forward 1 unit
     stepUp();
+    
+    printf("stepped\n");
 
     //Adjust position
-    adjustPosition();
+    //adjustPosition();
+    
+    printf("Pos adjusted\n");
     
     //Update direction and position
     direction = directionUpdate(move, direction);

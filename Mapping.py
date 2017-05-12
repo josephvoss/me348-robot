@@ -64,5 +64,5 @@ while True:
     plt.pause(1)
     print time.time()
     time.sleep(1)
-    
+
     
