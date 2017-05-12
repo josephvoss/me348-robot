@@ -144,50 +144,25 @@ int ff_follower(int pos[], int goal[], int ff_arr[][6], int direction)
     //if there are ties, default N,E,S,W tiebreakers
   for (int i=0;i<4;i++)
   {
-  	if (ff_value[i] < lowest && i==0 )
+  	if ((ff_value[i] < lowest && i==0 ) && !(walls[x][y] & 8))
   	{
   	  lowest = ff_value[i];
   	  card = i;	//this tells you where to move
   	}
 
-    if (ff_value[i] < lowest && i==1 )
+    if ((ff_value[i] < lowest && i==1 ) && !(walls[x][y] & 4))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
 
-    if (ff_value[i] < lowest && i==2 )
+    if ((ff_value[i] < lowest && i==2) && !(walls[x][y] & 2))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
     }
 
-    if (ff_value[i] < lowest && i==3 )
-    {
-      lowest = ff_value[i];
-      card = i; //this tells you where to move
-    }
-  }  for (int i=0;i<4;i++)
-  {
-  	if ((ff_value[i] < lowest && i==0 ) && (walls[x][y] != 8 && walls[x][y] != 12 && walls[x][y] != 14  && walls[x][y] != 10 && walls[x][y] != 11 && walls[x][y] != 9 && walls[x][y] != 13 ))
-  	{
-  	  lowest = ff_value[i];
-  	  card = i;	//this tells you where to move
-  	}
-
-    if ((ff_value[i] < lowest && i==1 )&& (walls[x][y] != 4 && walls[x][y] != 6 && walls[x][y] != 7 && walls[x][y] != 5 && walls[x][y] != 12 && walls[x][y] != 14 && walls[x][y] != 13))
-    {
-      lowest = ff_value[i];
-      card = i; //this tells you where to move
-    }
-
-    if ((ff_value[i] < lowest && i==2) && (walls[x][y] != 2 && walls[x][y] != 3 && walls[x][y] != 6 && walls[x][y] != 10 && walls[x][y] != 7 && walls[x][y] != 11 && walls[x][y] != 14 ))
-    {
-      lowest = ff_value[i];
-      card = i; //this tells you where to move
-    }
-
-    if ((ff_value[i] < lowest && i==3 ) && ( walls[x][y] != 1 && walls[x][y] != 3 && walls[x][y] != 5 && walls[x][y] != 9 && walls[x][y] != 7 && walls[x][y] != 11 && walls[x][y] != 13 ))
+    if ((ff_value[i] < lowest && i==3 ) && !(walls[x][y] & 1))
     {
       lowest = ff_value[i];
       card = i; //this tells you where to move
