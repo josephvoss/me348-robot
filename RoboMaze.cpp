@@ -370,6 +370,15 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
     }            
 }  
   
+void adjustPosition() //move backward a little bit to avoid collision
+{
+  int frontDis;
+  frontDis=ping_cm(17);
+  while (frontDis <= 8);
+  {drive_goto(-1,-1);
+  }
+}  
+
 int main()
 {
   //Initialize variables to 0.
