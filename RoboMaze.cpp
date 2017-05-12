@@ -42,6 +42,7 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
   printf("%d\t%d\t%d\n",irLeft,sonarDis,irRight);
   
   int sum = 0;
+
   //If walls exist add to array
   if (sonarDis < 5) //wall forward
   {
@@ -50,11 +51,11 @@ void buildWall(int wall_arr[][6], int pos[], int direction)
       
     wall_arr[y][x] += (int) pow(2,(int)3-s_dir);
   }
-  if (irLeft == 1) //wall left
+  if (irLeft == 0) //wall left
   {
     wall_arr[y][x] += (int) pow(2,(int)3-l_dir);
   }
-  if (irRight == 1) //wall right
+  if (irRight == 0) //wall right
   {
     wall_arr[y][x] += (int) pow(2,(int)3-r_dir);
   }                                    
@@ -384,8 +385,11 @@ int main()
     for (int j=0; j<6; j++)
     {
       ff_arr[i][j] = 0;
-      wall_arr[i][j] = 255;
+      wall_arr[i][j] = 0;
     }      
+  //set encoder and servo pins
+  drive_servoPins(12,13);
+  drive_encoderPins(14, 15);
   
   //Init wifi hardware
   wifi_start(9, 8, 115200, USB_PGM_TERM);
@@ -403,7 +407,7 @@ int main()
   position[1] = -1;      //Set intial y to 0
 
   //Set goal
-  goal[0] = 2;
+  goal[0] = 3;
   goal[1] = 2;
 
   //Wait until position is set by controller
@@ -416,7 +420,7 @@ int main()
   while(1)
   {    
     //Straighten self within the grid
-//    selfOrient();
+    //selfOrient();
     
     //Sense around robot
     buildWall(wall_arr, position, direction);
@@ -436,19 +440,29 @@ int main()
       }
       printf("\n");
     }      
-
+  
+    printf("\n*******\n\n****\n");
+    for (int i=0; i<6; i++)
+    {
+      for(int j=0; j<6; j++)
+      {
+        printf("%d\t", wall_arr[i][j]);
+      }
+      printf("\n");
+    }      
     //Turn if needed
-//    turn(move);    
+    turn(move);    
     
     //Move forward 1 unit
-//    stepUp();
+    stepUp();
 
     //Adjust position
-//    adjustPosition();
+    adjustPosition();
     
     //Update direction and position
     direction = directionUpdate(move, direction);
-//    positionUpdate(move,direction, position);
+    positionUpdate(move,direction, position);
     
+    pause(1000);
   }    
 }
