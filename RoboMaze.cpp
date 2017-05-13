@@ -148,6 +148,40 @@ void stepUp()
  *
  */
 {
+
+  /*
+ *correct the deviation of the robot
+ *
+ *Add a sonar at the bottom left of the robot
+ *
+ */
+  int leftWallDis_back,leftWallDis_front;
+  //Measure distance using the bottom left sonar
+  leftWallDis_back=ping_cm(7); //assume the side sonarPin is 13
+  if (leftWallDis_back < 20) //if there is a wall on the left
+  {
+    servo_angle(16,1800);
+    leftWallDis_front=ping_cm(17);//Distance measure from the head sonar
+    leftWallDis_back=ping_cm(7);//Distance from bottom sonar
+    while (leftWallDis_front - leftWallDis_back > 5) //assume 10, need to measure
+    {
+    drive_speed(-4,4);
+    pause(5);
+    leftWallDis_front=ping_cm(17);
+    leftWallDis_back=ping_cm(7);
+  }
+    while (leftWallDis_front - leftWallDis_back < 5)   
+    {
+      drive_speed(4,-4);
+      pause(5);
+      leftWallDis_front=ping_cm(17);
+      leftWallDis_back=ping_cm(7);
+    }      
+    drive_speed(0,0);
+    pause(10);
+    servo_angle(16,900);
+    pause(50);
+  }    
   //Set ramping speed. Prevents overacceleration
   drive_setRampStep(1);
 
@@ -325,21 +359,9 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   position[1] = y;
 
   return;
-}      
-            
-/*void toCenter()
-{
-  int left,right,difference;
-  servo_angle(16,180);
-  pause(500);
-  left = ping_cm(3);
-  servo_angle(16,0);
-  pause(1000);
-  right = ping_cm(3);
-}  */
+}              
 
-
-void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6])
+void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6], int ff[][6])
 /*
  * Check wifi receiver for updates. Blocking, waits to receive a get
  * request before continuing.
@@ -381,7 +403,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
       if(event == 'G' && id == getFromPageId)
       {
         //Buffer
-        char wall_string[150];
+        char wall_string[350];
         int i, j;
         
         //Create string showing the walls
@@ -390,6 +412,14 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
           i = x / 6;
           j = x % 6;
           sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
+          if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
+        }          
+        //Create string showing the ff
+        for (int x=0; x<36; x++)
+        {
+          i = x / 6;
+          j = x % 6;
+          sprintf(wall_string+strlen(wall_string),"%d\t",ff[i][j]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
         }          
         //Trying to rescue last integer
@@ -410,16 +440,33 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
     }            
 }  
   
-void adjustPosition() //move backward a little bit to avoid collision
+void adjustPosition()
+/*
+ *adjust the positon to avoid colision
+ */
 {
-  int frontDis;
-  frontDis=ping_cm(17);
-  while (frontDis <= 8);
+  int wallFrontDis;
+  //Measure distance using the bottom left sonar
+  wallFrontDis=ping_cm(17); //assume the side sonarPin is 13
+  if (wallFrontDis < 20) //if there is a wall on the left
   {
-    drive_goto(-1,-1);
-    frontDis=ping_cm(17);
+    while (wallFrontDis > 5) 
+    {
+    drive_speed(4,4);
+    pause(5);
+    wallFrontDis=ping_cm(17);
   }
+    while (wallFrontDis < 5)   
+    {
+      drive_speed(-4,-4);
+      pause(5);
+      wallFrontDis=ping_cm(17);
+    }      
+    drive_speed(0,0);
+    pause(10);
+  }    
 }  
+ 
 
 int main()
 {
@@ -468,7 +515,7 @@ int main()
   //Wait until position is set by controller
   while( position[1] == -1 )
   {
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_array);
   }
 
   // MAIN LOOP
@@ -489,7 +536,7 @@ int main()
       printf("\n");
     }     
     //Poll wifi module
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_array);
     
     //Decide where to go 
     //ff_funct(ff_arr, goal, wall_arr);
