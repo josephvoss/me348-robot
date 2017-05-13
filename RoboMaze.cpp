@@ -134,6 +134,38 @@ void stepUp()
  *
  */
 {
+
+  /*
+ *correct the deviation of the robot
+ *
+ *Add a sonar at the bottom left of the robot
+ *
+ */
+  int leftWallDis_back,leftWallDis_front;
+  //Measure distance using the bottom left sonar
+  leftWallDis_back=ping_cm(7); //assume the side sonarPin is 13
+  if (leftWallDis_back < 20) //if there is a wall on the left
+  {
+    servo_angle(16,1800);
+    leftWallDis_front=ping_cm(17);//Distance measure from the head sonar
+    leftWallDis_back=ping_cm(7);//Distance from bottom sonar
+    while (leftWallDis_front - leftWallDis_back > 5) //assume 10, need to measure
+    {
+    drive_speed(-4,4);
+    pause(5);
+    leftWallDis_front=ping_cm(17);
+    leftWallDis_back=ping_cm(7);
+  }
+    while (leftWallDis_front - leftWallDis_back < 5)   
+    {
+      drive_speed(4,-4);
+      pause(5);
+      leftWallDis_front=ping_cm(17);
+      leftWallDis_back=ping_cm(7);
+    }      
+    drive_speed(0,0);
+    pause(10);
+  }    
   //Set ramping speed. Prevents overacceleration
   drive_setRampStep(1);
 
