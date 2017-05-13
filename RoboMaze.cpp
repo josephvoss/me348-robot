@@ -738,7 +738,7 @@ int main()
     //printf("stepped\n");
 
     //Adjust position
-    //adjustPosition();
+    adjustPosition();
     
     //Update direction and position
     printf("Move is %d\n", move);
