@@ -155,27 +155,34 @@ void stepUp()
  *Add a sonar at the bottom left of the robot
  *
  */
-  int leftWallDis_back,leftWallDis_front;
+  
+  int leftWallDis_back,leftWallDis_front,adjust_counter;
   //Measure distance using the bottom left sonar
   leftWallDis_back=ping_cm(7); //assume the side sonarPin is 13
   if (leftWallDis_back < 20) //if there is a wall on the left
   {
+    adjust_counter = 0;
     servo_angle(16,1800);
     leftWallDis_front=ping_cm(17);//Distance measure from the head sonar
     leftWallDis_back=ping_cm(7);//Distance from bottom sonar
-    while (leftWallDis_front - leftWallDis_back > 5) //assume 10, need to measure
+    while (leftWallDis_front - leftWallDis_back > 5 && adjust_counter < 100) //assume 10, need to measure
     {
     drive_speed(-4,4);
     pause(5);
     leftWallDis_front=ping_cm(17);
     leftWallDis_back=ping_cm(7);
+    printf("Adjusting Loop # %d\n",adjust_counter);
+    adjust_counter++;
   }
-    while (leftWallDis_front - leftWallDis_back < 5)   
+    adjust_counter = 0;
+    while (leftWallDis_front - leftWallDis_back < 5 && adjust_counter < 100)   
     {
       drive_speed(4,-4);
       pause(5);
       leftWallDis_front=ping_cm(17);
       leftWallDis_back=ping_cm(7);
+      printf("Adjusting Loop # %d\n",adjust_counter);
+      adjust_counter++;
     }      
     drive_speed(0,0);
     pause(10);
@@ -186,7 +193,14 @@ void stepUp()
   drive_setRampStep(1);
 
   //Drive 90 ticks in current direction
+  servo_angle(16,900);
+  //if(ping_cm(17) < 20)
+  //{
+   // printf("Wall too close, no step\n");
+  //}
+  //else{   
   drive_goto(90,90);
+  //}  
 }
 
 void turn(int move)
@@ -413,8 +427,9 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
           j = x % 6;
           sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
+          
         }          
-        
+        sprintf(wall_string+strlen(wall_string),"\n");
         //Create string showing the ff
         for (int x=0; x<36; x++)
         {
@@ -430,6 +445,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
 
         //Print the walls
         wifi_print(GET, handle, "%s\n", wall_string);
+        printf("Wifi is seeing ---\n");
         printf("%s\n", wall_string);
         for(int x=0; x<strlen(wall_string); x++) wall_string[x] = NULL;
         
@@ -437,7 +453,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
         getFlag = 1;
         printf("Set getFlag\n");
       }
-      printf("getFlag=%d\n", getFlag);      
+      //printf("getFlag=%d\n", getFlag);      
       pause(500); 
     }            
 }  
@@ -450,20 +466,26 @@ void adjustPosition()
   int wallFrontDis;
   servo_angle(16,900);
   //Measure distance using the bottom left sonar
-  wallFrontDis=ping_cm(17); //assume the side sonarPin is 13
-  if (wallFrontDis < 20) //if there is a wall on the left
+  wallFrontDis=ping_cm(17); 
+  if (wallFrontDis < 10) 
   {
-    while (wallFrontDis > 5) 
+    int adjust_counter = 0;
+    while (wallFrontDis > 5 && adjust_counter < 100) 
     {
     drive_speed(4,4);
     pause(5);
     wallFrontDis=ping_cm(17);
+    printf("Adjusting Loop # %d\n",adjust_counter);
+    adjust_counter++;
   }
-    while (wallFrontDis < 5)   
+    adjust_counter = 0;
+    while (wallFrontDis < 5 && adjust_counter < 100)   
     {
       drive_speed(-4,-4);
       pause(5);
       wallFrontDis=ping_cm(17);
+      printf("Adjusting Loop # %d\n",adjust_counter);
+      adjust_counter++;
     }      
     drive_speed(0,0);
     pause(10);
@@ -538,8 +560,6 @@ int main()
       }
       printf("\n");
     }     
-    //Poll wifi module
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_arr);
     
     //Decide where to go 
     //ff_funct(ff_arr, goal, wall_arr);
@@ -606,6 +626,7 @@ int main()
       }
       printf("\n");
     }     
+    
     
 
       //FF FOLLOW
@@ -727,6 +748,9 @@ int main()
     //move = ff_follower(position, goal, ff_arr,direction, wall_arr); 
     printf("\n");
     
+    
+    //Poll wifi module
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_arr);
     
 
     
