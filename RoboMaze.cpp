@@ -323,7 +323,7 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
 }  */
 
 
-void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6])
+void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6], int ff[][6])
 /*
  * Check wifi receiver for updates. Blocking, waits to receive a get
  * request before continuing.
@@ -365,7 +365,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
       if(event == 'G' && id == getFromPageId)
       {
         //Buffer
-        char wall_string[150];
+        char wall_string[350];
         int i, j;
         
         //Create string showing the walls
@@ -374,6 +374,14 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
           i = x / 6;
           j = x % 6;
           sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
+          if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
+        }          
+        //Create string showing the ff
+        for (int x=0; x<36; x++)
+        {
+          i = x / 6;
+          j = x % 6;
+          sprintf(wall_string+strlen(wall_string),"%d\t",ff[i][j]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
         }          
         //Trying to rescue last integer
@@ -452,7 +460,7 @@ int main()
   //Wait until position is set by controller
   while( position[1] == -1 )
   {
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_array);
   }
 
   // MAIN LOOP
@@ -471,7 +479,7 @@ int main()
       printf("\n");
     }     
     //Poll wifi module
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_array);
     
     //Decide where to go 
     ff_funct(ff_arr, goal, wall_arr);
