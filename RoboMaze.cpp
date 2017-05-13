@@ -376,6 +376,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
           sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
         }          
+        sprintf(wall_string+strlen(wall_string),"\n");
         //Create string showing the ff
         for (int x=0; x<36; x++)
         {
