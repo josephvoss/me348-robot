@@ -403,7 +403,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
       if(event == 'G' && id == getFromPageId)
       {
         //Buffer
-        char wall_string[350];
+        char wall_string[400];
         int i, j;
         
         //Create string showing the walls
@@ -414,6 +414,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
           sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
         }          
+        
         //Create string showing the ff
         for (int x=0; x<36; x++)
         {
@@ -424,6 +425,7 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
         }          
         //Trying to rescue last integer
         //For w/e reason, last number is always dropped off
+        sprintf(wall_string+strlen(wall_string),"1\t");
         sprintf(wall_string+strlen(wall_string),"1\t");
 
         //Print the walls
@@ -446,6 +448,7 @@ void adjustPosition()
  */
 {
   int wallFrontDis;
+  servo_angle(16,900);
   //Measure distance using the bottom left sonar
   wallFrontDis=ping_cm(17); //assume the side sonarPin is 13
   if (wallFrontDis < 20) //if there is a wall on the left
@@ -515,7 +518,7 @@ int main()
   //Wait until position is set by controller
   while( position[1] == -1 )
   {
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_array);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_arr);
   }
 
   // MAIN LOOP
@@ -536,7 +539,7 @@ int main()
       printf("\n");
     }     
     //Poll wifi module
-    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_array);
+    wifiCheck(event, id, handle, postFromPageId, getFromPageId, goal, position, wall_arr, ff_arr);
     
     //Decide where to go 
     //ff_funct(ff_arr, goal, wall_arr);

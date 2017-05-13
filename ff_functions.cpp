@@ -13,7 +13,7 @@ void ff_funct(int ff[][6], int goal[], int walls[][6])
 
 {
 //  int walls[6][6] = {{11,8,10,8,10,12},{9,6,9,2,12,5},{5,13,1,14,3,4},{1,4,5,9,12,5},{5,3,6,5,5,5},{3,10,10,6,3,6}};
-  printf("wall array\n");
+  printf("wall array");
   for (int i=0; i<6; i++)
   {
     for (int j=0; j<6; j++)
