@@ -165,6 +165,8 @@ void stepUp()
     }      
     drive_speed(0,0);
     pause(10);
+    servo_angle(16,900);
+    pause(50);
   }    
   //Set ramping speed. Prevents overacceleration
   drive_setRampStep(1);
@@ -341,19 +343,7 @@ void positionUpdate(int move, int direction, int position[]) //(x,y)
   position[1] = y;
 
   return;
-}      
-            
-/*void toCenter()
-{
-  int left,right,difference;
-  servo_angle(16,180);
-  pause(500);
-  left = ping_cm(3);
-  servo_angle(16,0);
-  pause(1000);
-  right = ping_cm(3);
-}  */
-
+}              
 
 void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPageId, int goal[], int position[], int walls[][6], int ff[][6])
 /*
@@ -408,7 +398,6 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
           sprintf(wall_string+strlen(wall_string),"%d\t",walls[i][j]);
           if (j==5) sprintf(wall_string+strlen(wall_string),"\n");
         }          
-        sprintf(wall_string+strlen(wall_string),"\n");
         //Create string showing the ff
         for (int x=0; x<36; x++)
         {
@@ -435,16 +424,33 @@ void wifiCheck(int event, int id, int handle, int postFromPageId, int getFromPag
     }            
 }  
   
-void adjustPosition() //move backward a little bit to avoid collision
+void adjustPosition()
+/*
+ *adjust the positon to avoid colision
+ */
 {
-  int frontDis;
-  frontDis=ping_cm(17);
-  while (frontDis <= 8);
+  int wallFrontDis;
+  //Measure distance using the bottom left sonar
+  wallFrontDis=ping_cm(17); //assume the side sonarPin is 13
+  if (wallFrontDis < 20) //if there is a wall on the left
   {
-    drive_goto(-1,-1);
-    frontDis=ping_cm(17);
+    while (wallFrontDis > 5) 
+    {
+    drive_speed(4,4);
+    pause(5);
+    wallFrontDis=ping_cm(17);
   }
+    while (wallFrontDis < 5)   
+    {
+      drive_speed(-4,-4);
+      pause(5);
+      wallFrontDis=ping_cm(17);
+    }      
+    drive_speed(0,0);
+    pause(10);
+  }    
 }  
+ 
 
 int main()
 {
